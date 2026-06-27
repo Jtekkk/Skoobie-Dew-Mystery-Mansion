@@ -352,11 +352,94 @@ body {
   30% { background-color: rgba(255, 93, 115, .25); }
 }
 
+/* ---------- Difficulty cards ---------- */
+.diff-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.diff-card {
+  text-align: left; font-family: inherit; cursor: pointer;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; color: var(--ink); transition: border-color .15s, transform .08s, box-shadow .2s;
+}
+.diff-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.4); }
+.diff-card h3 { font-family: "Creepster", cursive; font-weight: 400; font-size: 1.6rem; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
+.diff-card p { color: var(--muted); font-size: .9rem; line-height: 1.45; margin-bottom: 12px; }
+.diff-stats { font-size: .78rem; color: var(--accent); font-family: "Special Elite", monospace; }
+
+/* ---------- HUD additions ---------- */
+.chip.wide { width: auto; padding: 0 12px; font-size: .85rem; font-family: inherit; font-weight: 700; }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Inventory ---------- */
+.inv-wrap {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.inv-wrap h3 { font-size: .9rem; color: var(--accent); margin-bottom: 10px; }
+.inv { display: flex; flex-wrap: wrap; gap: 8px; }
+.inv-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px 6px 10px; font-size: .82rem; color: var(--ink); cursor: pointer;
+  font-family: inherit; transition: border-color .15s, transform .08s;
+}
+.inv-item:hover { border-color: var(--gold); transform: translateY(-1px); }
+.inv-item span { font-weight: 700; }
+.small { font-size: .82rem; }
+
+.side-buttons { display: flex; gap: 10px; }
+.side-buttons .btn { flex: 1; }
+
+/* ---------- Locked exits ---------- */
+.exit-btn.locked { border-color: var(--danger); opacity: .8; }
+.exit-btn.locked::before { content: ""; }
+
+/* ---------- Mysteries ---------- */
+.quest-list { display: flex; flex-direction: column; gap: 12px; }
+.quest { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.quest.done { border-color: var(--accent); }
+.q-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.q-icon { font-size: 1.4rem; }
+.q-name { font-weight: 800; }
+.q-status { margin-left: auto; font-family: "Special Elite", monospace; font-size: .85rem; color: var(--gold); }
+.quest.done .q-status { color: var(--accent); }
+.q-blurb { color: var(--muted); font-size: .88rem; line-height: 1.45; }
+
+/* ---------- Puzzle ---------- */
+.puzzle-box { max-width: 480px; text-align: center; }
+.pz-area { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 22px 0 10px; }
+.pz-code {
+  font-family: "Special Elite", monospace; font-size: 2rem; letter-spacing: .5em; text-align: center;
+  width: 220px; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg-2); color: #fff;
+}
+.pz-code:focus { outline: none; border-color: var(--accent); }
+.pz-display {
+  min-height: 44px; font-size: 1.6rem; letter-spacing: .2em;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 16px; min-width: 240px;
+}
+.pz-wrong { color: var(--danger); font-size: 1rem; letter-spacing: normal; }
+.pz-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.pz-key {
+  font-family: inherit; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+  padding: 14px 20px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--ink); transition: transform .08s, border-color .15s;
+}
+.pz-key:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.pz-key:active { transform: translateY(0); }
+.pz-hint { color: var(--gold); font-size: .9rem; margin-top: 8px; min-height: 1.3em; }
+.shake { animation: shake .35s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+/* ---------- Case file bonus clue ---------- */
+.clue-list li.bonus { border-left-color: var(--accent-2); color: #e6d9ff; }
+.ending-bonus { color: var(--accent); font-weight: 700; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .stage { grid-template-columns: 1fr; }
   .casefile-grid { grid-template-columns: 1fr; }
   .log { max-height: 200px; }
-  .hud-right { gap: 10px; }
-  .stat { font-size: .85rem; }
+  .hud-right { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .stat { font-size: .82rem; }
+  .chip.wide { font-size: .8rem; }
 }
