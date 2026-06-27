@@ -204,22 +204,29 @@ body {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 .scene-art {
-  height: 240px;
-  background: linear-gradient(160deg, #2a2150, #12233f);
+  height: 260px;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 5.5rem;
   border-bottom: 1px solid var(--line);
-  text-shadow: 0 8px 30px rgba(0,0,0,.6);
+  overflow: hidden;
+  background: #0a0a16;
 }
-.scene-art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 120%, rgba(179,136,255,.22), transparent 60%);
-  pointer-events: none;
+.scene-svg { display: block; width: 100%; height: 100%; }
+
+/* SVG atmosphere animations */
+.s-fog  { animation: sFog 22s ease-in-out infinite; }
+.s-fog2 { animation: sFog 30s ease-in-out infinite reverse; }
+@keyframes sFog { 0%,100% { transform: translateX(-40px); } 50% { transform: translateX(40px); } }
+.s-dust { animation: sDust 7s ease-in-out infinite; }
+@keyframes sDust { 0%,100% { transform: translateY(0); opacity: .15; } 50% { transform: translateY(-14px); opacity: .5; } }
+.s-flicker { animation: sFlicker 2.4s steps(3) infinite; transform-origin: center; }
+.s-flicker-slow { animation: sFlicker 5s ease-in-out infinite; }
+@keyframes sFlicker { 0%,100% { opacity: 1; } 45% { opacity: .55; } 70% { opacity: .85; } }
+.s-sway { animation: sSway 6s ease-in-out infinite; transform-origin: top center; }
+@keyframes sSway { 0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+.s-rock { animation: sRock 4s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes sRock { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .s-fog, .s-fog2, .s-dust, .s-flicker, .s-flicker-slow, .s-sway, .s-rock { animation: none; }
 }
 .room-name { font-family: "Creepster", cursive; font-weight: 400; font-size: 2.2rem; letter-spacing: 1px; color: #fff; padding: 22px 26px 6px; }
 .room-desc { padding: 0 26px; color: var(--muted); line-height: 1.6; max-width: 60ch; }

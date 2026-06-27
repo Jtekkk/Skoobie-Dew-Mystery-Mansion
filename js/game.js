@@ -126,8 +126,8 @@
 
   function renderRoom() {
     const room = ROOMS[state.room];
-    $("#scene-art").textContent = room.art;
-    $("#room-name").textContent = room.name;
+    $("#scene-art").innerHTML = Scenes.build(state.room);
+    $("#room-name").textContent = `${room.art} ${room.name}`;
     $("#room-desc").textContent = room.desc;
 
     // actions
