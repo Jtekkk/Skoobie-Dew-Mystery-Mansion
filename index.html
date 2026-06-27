@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skoobie-Dew &amp; the Mystery Mansion</title>
+  <meta name="description" content="A spooky point-and-click mystery adventure. Explore the haunted manor, gather clues, and unmask the Phantom!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ===== TITLE SCREEN ===== -->
+    <section id="title-screen" class="screen active">
+      <div class="fog fog-1"></div>
+      <div class="fog fog-2"></div>
+      <div class="title-card">
+        <p class="kicker">A Spooky Point-&amp;-Click Mystery</p>
+        <h1 class="game-title">Skoobie-Dew<span class="amp">&amp;&nbsp;the</span>Mystery Mansion</h1>
+        <p class="tagline">The old Dew Manor is haunted again&hellip; or <em>is</em> it?
+          Snoop through the shadows, sniff out the clues, and unmask the Phantom!</p>
+        <div class="title-buttons">
+          <button id="btn-new-game" class="btn btn-primary">🔦 Start Investigation</button>
+          <button id="btn-continue" class="btn btn-ghost" hidden>↩ Continue Case</button>
+          <button id="btn-how" class="btn btn-ghost">❔ How to Play</button>
+        </div>
+        <p class="credits">Grab a Scooby Snack and get sleuthing. Jinkies!</p>
+      </div>
+    </section>
+
+    <!-- ===== HOW TO PLAY ===== -->
+    <section id="how-screen" class="screen">
+      <div class="panel narrow">
+        <h2>How to Play</h2>
+        <ul class="how-list">
+          <li><strong>Explore</strong> the mansion by moving between rooms with the exit buttons.</li>
+          <li><strong>Search</strong> each room to uncover hidden <em>clues</em>. Every clue narrows down the suspects.</li>
+          <li><strong>Munch Scooby Snacks</strong> to keep your courage up — the Phantom is prowling, and a good scare costs you a snack!</li>
+          <li>Once you've gathered enough evidence, open the <strong>Case File</strong> and <strong>make your accusation</strong>.</li>
+          <li>Pin every clue on the right suspect to win and unmask the Phantom of Dew Manor.</li>
+        </ul>
+        <button class="btn btn-primary" data-goto="title-screen">Got it!</button>
+      </div>
+    </section>
+
+    <!-- ===== GAME SCREEN ===== -->
+    <section id="game-screen" class="screen">
+      <header class="hud">
+        <div class="hud-left">
+          <button id="btn-menu" class="chip" title="Back to title">☰</button>
+          <span class="hud-room" id="hud-room">Foyer</span>
+        </div>
+        <div class="hud-right">
+          <span class="stat" title="Scooby Snacks">🦴 <b id="stat-snacks">3</b></span>
+          <span class="stat" title="Courage">😼 <b id="stat-courage">100</b>%</span>
+          <span class="stat" title="Clues found">🔎 <b id="stat-clues">0</b>/<span id="stat-clues-total">5</span></span>
+        </div>
+      </header>
+
+      <main class="stage">
+        <div class="scene" id="scene">
+          <div class="scene-art" id="scene-art" aria-hidden="true"></div>
+          <h2 class="room-name" id="room-name">The Foyer</h2>
+          <p class="room-desc" id="room-desc"></p>
+          <div class="actions" id="actions"></div>
+          <div class="exits" id="exits"></div>
+        </div>
+
+        <aside class="sidebar">
+          <div class="log-wrap">
+            <h3>Detective's Log</h3>
+            <div class="log" id="log"></div>
+          </div>
+          <button id="btn-casefile" class="btn btn-primary block">📂 Open Case File</button>
+        </aside>
+      </main>
+    </section>
+
+    <!-- ===== CASE FILE MODAL ===== -->
+    <div id="casefile" class="modal">
+      <div class="modal-box">
+        <button class="modal-close" data-close>✕</button>
+        <h2>📂 Case File</h2>
+
+        <div class="casefile-grid">
+          <div>
+            <h3>Clues Gathered <span class="muted" id="cf-clue-count"></span></h3>
+            <ul class="clue-list" id="cf-clues"><li class="muted">No clues yet — go snooping!</li></ul>
+          </div>
+          <div>
+            <h3>Suspects</h3>
+            <div class="suspects" id="cf-suspects"></div>
+          </div>
+        </div>
+
+        <div class="accuse-bar">
+          <p class="muted" id="accuse-hint">Gather all clues before making your final accusation.</p>
+          <button id="btn-accuse" class="btn btn-danger" disabled>🚨 Accuse the Phantom</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ENDING MODAL ===== -->
+    <div id="ending" class="modal">
+      <div class="modal-box">
+        <div class="ending-art" id="ending-art" aria-hidden="true"></div>
+        <h2 id="ending-title">Case Closed!</h2>
+        <p id="ending-text"></p>
+        <button id="btn-play-again" class="btn btn-primary">🔁 New Mystery</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
