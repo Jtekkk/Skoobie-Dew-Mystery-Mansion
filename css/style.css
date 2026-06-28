@@ -210,7 +210,24 @@ body {
   overflow: hidden;
   background: #0a0a16;
 }
+.scene-bg { position: absolute; inset: 0; z-index: 1; }
 .scene-svg { display: block; width: 100%; height: 100%; }
+
+/* ---- character sprite layers over the scene ---- */
+.hero-layer { position: absolute; left: 26px; bottom: 6px; width: 96px; height: 110px; z-index: 3; pointer-events: none; }
+.spr-hero { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation: heroBob 3.2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes heroBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(-1deg); } }
+
+.phantom-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; }
+.phantom-layer.show { animation: phantomScare 1.5s ease-out forwards; }
+.spr-phantom { width: 150px; height: 180px; filter: drop-shadow(0 0 18px rgba(123,241,168,.6)); }
+@keyframes phantomScare {
+  0%   { opacity: 0; transform: translateX(120px) scale(.5) rotate(6deg); }
+  22%  { opacity: .97; transform: translateX(0) scale(1.12) rotate(0deg); }
+  62%  { opacity: .9;  transform: translateX(-6px) scale(1.05); }
+  100% { opacity: 0;  transform: translateX(0) scale(1.3) translateY(-18px); }
+}
+@media (prefers-reduced-motion: reduce) { .spr-hero { animation: none; } .phantom-layer.show { animation-duration: 1.2s; } }
 
 /* SVG atmosphere animations */
 .s-fog  { animation: sFog 22s ease-in-out infinite; }
@@ -338,7 +355,8 @@ body {
 }
 .suspect:hover { border-color: var(--accent-2); }
 .suspect.selected { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,.3); }
-.suspect .face { font-size: 2rem; line-height: 1; }
+.suspect .face { font-size: 2rem; line-height: 1; flex: 0 0 auto; }
+.suspect .face .spr-sus { width: 48px; height: 48px; display: block; border-radius: 50%; background: rgba(0,0,0,.25); }
 .suspect .who { font-weight: 800; }
 .suspect .role { font-size: .8rem; color: var(--muted); }
 
@@ -347,6 +365,9 @@ body {
 
 /* Ending */
 .ending-art { font-size: 4.5rem; text-align: center; margin-bottom: 10px; animation: pop .4s ease; }
+.ending-art .spr-sus, .ending-art .spr-phantom { width: 130px; height: 130px; display: inline-block; }
+.ending-art .spr-sus { border-radius: 50%; background: radial-gradient(circle, rgba(123,241,168,.25), transparent 70%); }
+.unmask-tag { font-family: "Creepster", cursive; font-size: 1.4rem; letter-spacing: 2px; color: var(--gold); margin-top: 4px; }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 #ending-text { color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
 #ending .modal-box { text-align: center; max-width: 560px; }

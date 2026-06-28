@@ -126,7 +126,7 @@
 
   function renderRoom() {
     const room = ROOMS[state.room];
-    $("#scene-art").innerHTML = Scenes.build(state.room);
+    $("#scene-bg").innerHTML = Scenes.build(state.room);
     $("#room-name").textContent = `${room.art} ${room.name}`;
     $("#room-desc").textContent = room.desc;
 
@@ -208,10 +208,18 @@
     if (state.over || g.rng() >= diff.scare) return;
     const scene = $("#scene");
     scene.classList.remove("scare-flash"); void scene.offsetWidth; scene.classList.add("scare-flash");
+    showPhantom();
     Sfx.scare();
     if (state.snacks > 0) { state.snacks -= 1; logMsg(pick(SCARE_LINES), "scare"); }
     else { logMsg("The Phantom strikes and you're all out of snacks! Your courage takes the hit. 😱", "scare"); g.courage(-20); }
     renderHUD();
+  }
+
+  function showPhantom() {
+    const layer = $("#phantom-layer");
+    layer.innerHTML = Sprites.phantom();
+    layer.classList.remove("show"); void layer.offsetWidth; layer.classList.add("show");
+    setTimeout(() => { layer.classList.remove("show"); layer.innerHTML = ""; }, 1500);
   }
 
   // ---- puzzles ----
@@ -323,7 +331,7 @@
     const wrap = $("#cf-suspects"); wrap.innerHTML = "";
     SUSPECTS.forEach((s) => {
       const btn = el("button", "suspect" + (state.accusedId === s.id ? " selected" : ""));
-      btn.innerHTML = `<span class="face">${s.face}</span><span><span class="who">${s.name}</span><br><span class="role">${s.role}</span></span>`;
+      btn.innerHTML = `<span class="face">${Sprites.suspect(s.id)}</span><span><span class="who">${s.name}</span><br><span class="role">${s.role}</span></span>`;
       btn.addEventListener("click", () => { state.accusedId = s.id; Sfx.blip(); renderCaseFile(); save(); });
       wrap.appendChild(btn);
     });
@@ -371,7 +379,7 @@
     if (state.flags.treasureTaken) bonus += "You even recovered the lost Dew fortune! ";
     if (state.quests.locket) bonus += "And you mended poor Eleanor's locket along the way. ";
     const sideCount = Object.keys(state.quests).length;
-    $("#ending-art").textContent = "🎭✨";
+    $("#ending-art").innerHTML = Sprites.suspect(c.id) + '<div class="unmask-tag">UNMASKED!</div>';
     $("#ending-title").textContent = "Mystery Solved!";
     $("#ending-text").innerHTML =
       `You whip off the Phantom's mask to reveal&hellip; <b>${c.name}</b>, ${c.role.toLowerCase()}!<br><br>` +
@@ -383,7 +391,7 @@
   function loseGame(reason) {
     state.over = true; clearSave();
     Sfx.lose(); closeModals();
-    $("#ending-art").textContent = "👻💨";
+    $("#ending-art").innerHTML = Sprites.phantom();
     $("#ending-title").textContent = "The Phantom Escapes!";
     $("#ending-text").innerHTML = reason + "<br><br>Better luck next time, gang!";
     $("#ending").classList.add("open");
@@ -394,6 +402,8 @@
     state = existing || freshState(diffId);
     diff = DIFFICULTIES[state.diff] || DIFFICULTIES.normal;
     $("#log").innerHTML = "";
+    $("#hero-layer").innerHTML = Sprites.hero();
+    $("#phantom-layer").innerHTML = "";
     closeModals();
     show("game-screen");
     if (existing) logMsg("↩ <b>Case resumed.</b> Now where were we…", "good");
