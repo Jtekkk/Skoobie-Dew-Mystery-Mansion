@@ -68,6 +68,7 @@
           <span class="stat" title="Scooby Snacks">🦴 <b id="stat-snacks">3</b></span>
           <span class="stat" title="Courage">😼 <b id="stat-courage">100</b>%</span>
           <span class="stat" title="Key leads found">🔎 <b id="stat-clues">0</b>/4</span>
+          <span class="stat phantom-sense" id="stat-phantom" title="Phantom proximity">👻 <b>—</b></span>
           <button id="btn-hint" class="chip wide" title="Get a hint">💡 Hint</button>
           <button id="btn-sound" class="chip" title="Toggle sound">🔊</button>
         </div>
@@ -77,6 +78,7 @@
         <div class="scene" id="scene">
           <div class="scene-art" id="scene-art" aria-hidden="true">
             <div class="scene-bg" id="scene-bg"></div>
+            <div class="gang-layer" id="gang-layer"></div>
             <div class="hero-layer" id="hero-layer"></div>
             <div class="phantom-layer" id="phantom-layer"></div>
           </div>
@@ -98,6 +100,7 @@
           <div class="side-buttons">
             <button id="btn-casefile" class="btn btn-primary">📂 Case File</button>
             <button id="btn-mysteries" class="btn btn-ghost">🗂️ Mysteries</button>
+            <button id="btn-map" class="btn btn-ghost">🗺️ Map</button>
           </div>
         </aside>
       </main>
@@ -135,6 +138,16 @@
       </div>
     </div>
 
+    <!-- ===== MINIMAP ===== -->
+    <div id="minimap" class="modal">
+      <div class="modal-box">
+        <button class="modal-close" data-close>✕</button>
+        <h2>🗺️ Dew Manor</h2>
+        <p class="muted" id="mm-sense" style="margin-bottom:12px"></p>
+        <div id="mm-canvas" class="mm-canvas"></div>
+      </div>
+    </div>
+
     <!-- ===== PUZZLE ===== -->
     <div id="puzzle" class="modal">
       <div class="modal-box puzzle-box">
@@ -161,6 +174,7 @@
   <script src="js/scenes.js"></script>
   <script src="js/sprites.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/minimap.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

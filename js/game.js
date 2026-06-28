@@ -20,6 +20,8 @@
       diff: d.id,
       culpritId: culprit.id,
       room: START_ROOM,
+      phantomRoom: pick(PHANTOM_START),
+      visited: { [START_ROOM]: true },
       snacks: d.snacks,
       courage: d.courage,
       hintsLeft: d.hints,
@@ -110,11 +112,21 @@
     $("#stat-courage").textContent = state.courage;
     $("#stat-clues").textContent = coreFoundCount();
     $("#hud-room").textContent = ROOMS[state.room].name;
+    renderPhantomSense();
     const hb = $("#btn-hint");
     const unlimited = diff.hints === Infinity;
     hb.textContent = "💡 Hint" + (unlimited ? "" : " (" + state.hintsLeft + ")");
     hb.disabled = !unlimited && state.hintsLeft <= 0;
     $("#btn-sound").textContent = Sfx.isMuted() ? "🔇" : "🔊";
+  }
+
+  function renderPhantomSense() {
+    const el2 = $("#stat-phantom"); if (!el2) return;
+    const d = Minimap.distance(state.room, state.phantomRoom);
+    const label = d <= 0 ? "HERE!" : d === 1 ? "Adjacent!" : d === 2 ? "Near" : d === 3 ? "Close" : "Distant";
+    el2.querySelector("b").textContent = label;
+    el2.classList.toggle("danger", d <= 1);
+    el2.classList.toggle("warn", d === 2 || d === 3);
   }
 
   function exitInfo(exit) {
@@ -127,6 +139,8 @@
   function renderRoom() {
     const room = ROOMS[state.room];
     $("#scene-bg").innerHTML = Scenes.build(state.room);
+    const spot = GANG_SPOTS[state.room];
+    $("#gang-layer").innerHTML = spot ? Sprites.gang(spot.id) : "";
     $("#room-name").textContent = `${room.art} ${room.name}`;
     $("#room-desc").textContent = room.desc;
 
@@ -180,12 +194,13 @@
   // ---- actions / movement ----
   function doAction(a) {
     Sfx.blip();
+    if (a.risky) heroAnim("search", 900);
     a.do(g);
     if (a.once) state.done[state.room + "#" + a.id] = true;
     if (state.over) return;
     runQuests();
     if (state.over) return;
-    if (a.risky) maybeScare();
+    if (a.risky) phantomTurn();   // a thorough search gives the Phantom a moment to prowl
     if (state.over) return;
     renderRoom();
     save();
@@ -193,14 +208,62 @@
 
   function goTo(roomId) {
     Sfx.door();
+    heroAnim("walk", 700);
     state.room = roomId;
+    state.visited[roomId] = true;
     logMsg(`You creep into <b>${ROOMS[roomId].name}</b>.`);
+    gangCameo(roomId);
     runQuests();
     if (state.over) return;
-    maybeScare();
+    // walked straight into the Phantom?
+    if (state.phantomRoom === roomId) encounter();
+    else phantomTurn();
     if (state.over) return;
     renderRoom();
     save();
+  }
+
+  // ---- the roaming Phantom ----
+  function phantomTurn() {
+    if (state.over) return;
+    movePhantom();
+    if (state.phantomRoom === state.room) { encounter(); return; }
+    maybeScare();  // ambient jump-scare when the Phantom isn't right on top of you
+  }
+
+  function movePhantom() {
+    const opts = Minimap.roamNeighbors(state.phantomRoom);
+    if (!opts.length) return;
+    // chase bias scales with difficulty; otherwise wander
+    const bias = { easy: 0.25, normal: 0.5, spooky: 0.75 }[diff.id] || 0.5;
+    if (g.rng() < bias) state.phantomRoom = Minimap.stepToward(state.phantomRoom, state.room);
+    else state.phantomRoom = opts[Math.floor(g.rng() * opts.length)];
+  }
+
+  function encounter() {
+    const scene = $("#scene");
+    scene.classList.remove("scare-flash"); void scene.offsetWidth; scene.classList.add("scare-flash");
+    showPhantom(); Sfx.scare();
+    if (state.snacks > 0) { state.snacks -= 1; logMsg(`👻 The Phantom corners you in <b>${ROOMS[state.room].name}</b>! You fling a Scooby Snack and scramble free.`, "scare"); }
+    else { logMsg(`👻 The Phantom corners you in <b>${ROOMS[state.room].name}</b> — and you're out of snacks! Your courage buckles.`, "scare"); g.courage(-25); }
+    if (state.over) return;
+    // the Phantom recoils to an adjacent room so you aren't trapped
+    const away = Minimap.roamNeighbors(state.phantomRoom).filter(n => n !== state.room);
+    if (away.length) state.phantomRoom = away[Math.floor(g.rng() * away.length)];
+    renderHUD();
+  }
+
+  function gangCameo(roomId) {
+    const spot = GANG_SPOTS[roomId];
+    if (spot && !state.flags["met_" + spot.id]) { state.flags["met_" + spot.id] = true; logMsg("🐶 " + spot.line, "good"); }
+  }
+
+  // ---- hero walk / search animation ----
+  let heroTimer = null;
+  function heroAnim(cls, ms) {
+    const h = $("#hero-layer");
+    h.classList.remove("walk", "search"); void h.offsetWidth; h.classList.add(cls);
+    clearTimeout(heroTimer); heroTimer = setTimeout(() => h.classList.remove(cls), ms);
   }
 
   // ---- the Phantom scare mechanic ----
@@ -367,6 +430,15 @@
     $("#mysteries").classList.add("open");
   }
 
+  function openMap() {
+    $("#mm-canvas").innerHTML = Minimap.build(state);
+    const d = Minimap.distance(state.room, state.phantomRoom);
+    $("#mm-sense").innerHTML = d <= 1
+      ? "🚨 The Phantom is <b>right on your tail</b> — move carefully!"
+      : `The Phantom is roaming about <b>${d}</b> room${d === 1 ? "" : "s"} away. Snacks keep it at bay.`;
+    $("#minimap").classList.add("open");
+  }
+
   function closeModals() { document.querySelectorAll(".modal").forEach((m) => m.classList.remove("open")); }
 
   // ---- endings ----
@@ -385,7 +457,9 @@
       `You whip off the Phantom's mask to reveal&hellip; <b>${c.name}</b>, ${c.role.toLowerCase()}!<br><br>` +
       `"And I would've gotten away with it too, if it weren't for you meddling kids!" Their scheme — ${c.motive} — is foiled at last.<br><br>` +
       (bonus ? `<span class="ending-bonus">${bonus}</span><br><br>` : "") +
-      `🦴 ${state.snacks} snacks &nbsp;•&nbsp; 😼 ${state.courage}% courage &nbsp;•&nbsp; 🗂️ ${sideCount}/3 side mysteries &nbsp;•&nbsp; Difficulty: ${diff.name}`;
+      `🦴 ${state.snacks} snacks &nbsp;•&nbsp; 😼 ${state.courage}% courage &nbsp;•&nbsp; 🗂️ ${sideCount}/3 side mysteries &nbsp;•&nbsp; Difficulty: ${diff.name}` +
+      `<div class="gang-lineup">${["shaggy", "velma", "fred", "daphne"].map(id => Sprites.gang(id)).join("")}</div>` +
+      `<div class="gang-cheer">Mystery Inc. cheers — another case closed! 🎉</div>`;
     $("#ending").classList.add("open");
   }
   function loseGame(reason) {
@@ -402,8 +476,9 @@
     state = existing || freshState(diffId);
     diff = DIFFICULTIES[state.diff] || DIFFICULTIES.normal;
     $("#log").innerHTML = "";
-    $("#hero-layer").innerHTML = Sprites.hero();
+    $("#hero-layer").innerHTML = Sprites.hero() + '<div class="hero-glass">🔎</div>';
     $("#phantom-layer").innerHTML = "";
+    gangCameo(state.room);
     closeModals();
     show("game-screen");
     if (existing) logMsg("↩ <b>Case resumed.</b> Now where were we…", "good");
@@ -442,6 +517,7 @@
     $("#btn-sound").addEventListener("click", () => { Sfx.toggleMute(); renderHUD(); });
     $("#btn-casefile").addEventListener("click", () => { Sfx.blip(); openCaseFile(); });
     $("#btn-mysteries").addEventListener("click", () => { Sfx.blip(); openMysteries(); });
+    $("#btn-map").addEventListener("click", () => { Sfx.blip(); openMap(); });
     $("#btn-accuse").addEventListener("click", accuse);
     $("#btn-play-again").addEventListener("click", () => { Sfx.blip(); chooseDifficulty(); });
 

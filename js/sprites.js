@@ -110,5 +110,54 @@ const Sprites = (function () {
   }
   function suspect(id) { return (SUS[id] || SUS.cragg)(); }
 
-  return { hero, phantom, suspect };
+  /* The rest of Mystery Inc. — chibi cameo figures. */
+  const GANG = {
+    shaggy: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Shaggy">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="24" y="84" width="9" height="34" rx="4" fill="#6b4f2a"/><rect x="37" y="84" width="9" height="34" rx="4" fill="#6b4f2a"/>
+      <path d="M22 50 Q35 44 48 50 L46 88 L24 88 Z" fill="#7cc14e"/>
+      <rect x="14" y="52" width="8" height="34" rx="4" fill="#7cc14e"/><rect x="48" y="52" width="8" height="34" rx="4" fill="#7cc14e"/>
+      <circle cx="35" cy="30" r="16" fill="#d8b48c"/>
+      <path d="M19 28 Q18 8 35 10 Q52 8 51 28 Q44 18 35 19 Q26 18 19 28 Z" fill="#7a5a32"/>
+      <circle cx="29" cy="30" r="2" fill="#26210f"/><circle cx="41" cy="30" r="2" fill="#26210f"/>
+      <path d="M28 39 q7 4 14 0" stroke="#5a4326" stroke-width="1.6" fill="none"/>
+      <g fill="#5a4326">${[26,32,38,44].map(x=>`<circle cx="${x}" cy="42" r="1"/>`).join("")}</g></svg>`,
+    velma: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Velma">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="25" y="86" width="8" height="32" rx="4" fill="#c45a2a"/><rect x="37" y="86" width="8" height="32" rx="4" fill="#c45a2a"/>
+      <path d="M22 80 Q35 74 48 80 L50 92 L20 92 Z" fill="#9b2d33"/>
+      <path d="M22 50 Q35 45 48 50 L48 82 L22 82 Z" fill="#e08a3c"/>
+      <path d="M22 52 h-7 v28 h7 ZM48 52 h7 v28 h-7 Z" fill="#e08a3c"/>
+      <path d="M48 52 l8 0 0 8" fill="none"/>
+      <circle cx="35" cy="32" r="16" fill="#e6c4a0"/>
+      <path d="M18 32 Q16 12 35 12 Q54 12 52 32 L52 24 Q35 16 18 24 Z" fill="#7a4a26"/>
+      <path d="M18 30 q0 12 4 16 L24 30Z M52 30 q0 12 -4 16 L46 30Z" fill="#7a4a26"/>
+      <circle cx="29" cy="32" r="6" fill="none" stroke="#2a2a2a" stroke-width="1.6"/><circle cx="42" cy="32" r="6" fill="none" stroke="#2a2a2a" stroke-width="1.6"/>
+      <line x1="35" y1="31" x2="36" y2="31" stroke="#2a2a2a" stroke-width="1.6"/>
+      <circle cx="29" cy="32" r="2" fill="#26210f"/><circle cx="42" cy="32" r="2" fill="#26210f"/>
+      <g fill="#c98a5e">${[27,31,39,43].map(x=>`<circle cx="${x}" cy="40" r=".9"/>`).join("")}</g></svg>`,
+    fred: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Fred">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="24" y="86" width="9" height="32" rx="4" fill="#2f5c8f"/><rect x="37" y="86" width="9" height="32" rx="4" fill="#2f5c8f"/>
+      <path d="M21 50 Q35 44 49 50 L48 88 L22 88 Z" fill="#f0f0f3"/>
+      <rect x="13" y="52" width="9" height="34" rx="4" fill="#f0f0f3"/><rect x="48" y="52" width="9" height="34" rx="4" fill="#f0f0f3"/>
+      <path d="M30 50 L40 50 L35 62 Z" fill="#e8762a"/>
+      <circle cx="35" cy="30" r="16" fill="#e6c4a0"/>
+      <path d="M19 26 Q20 9 35 10 Q50 9 51 26 Q44 17 35 18 Q26 17 19 26 Z" fill="#f1d27a"/>
+      <circle cx="29" cy="30" r="2" fill="#26210f"/><circle cx="41" cy="30" r="2" fill="#26210f"/>
+      <path d="M29 38 q6 3 12 0" stroke="#b98a4a" stroke-width="1.4" fill="none"/></svg>`,
+    daphne: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Daphne">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="27" y="92" width="7" height="26" rx="3" fill="#e6c4a0"/><rect x="37" y="92" width="7" height="26" rx="3" fill="#e6c4a0"/>
+      <path d="M22 52 Q35 46 48 52 L52 94 L18 94 Z" fill="#7e4ca8"/>
+      <rect x="15" y="54" width="8" height="32" rx="4" fill="#7e4ca8"/><rect x="47" y="54" width="8" height="32" rx="4" fill="#7e4ca8"/>
+      <path d="M24 50 q11 6 22 0 l-2 -6 q-9 4 -18 0 Z" fill="#3ad29a"/>
+      <circle cx="35" cy="30" r="16" fill="#e6c4a0"/>
+      <path d="M17 30 Q15 8 35 9 Q55 8 53 30 Q56 50 49 60 L46 30 Q35 18 24 30 L21 60 Q14 50 17 30 Z" fill="#d9622e"/>
+      <circle cx="29" cy="31" r="2" fill="#26210f"/><circle cx="41" cy="31" r="2" fill="#26210f"/>
+      <path d="M30 39 q5 3 10 0" stroke="#b23a5b" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+  };
+  function gang(id) { return GANG[id] || ""; }
+
+  return { hero, phantom, suspect, gang };
 })();

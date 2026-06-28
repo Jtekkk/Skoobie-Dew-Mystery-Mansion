@@ -180,6 +180,10 @@ body {
 .chip:hover { background: var(--panel); }
 .stat { font-size: .95rem; color: var(--muted); white-space: nowrap; }
 .stat b { color: var(--ink); font-size: 1.05rem; }
+.phantom-sense.warn b { color: var(--gold); }
+.phantom-sense.danger b { color: var(--danger); }
+.phantom-sense.danger { animation: sensepulse 1s ease-in-out infinite; }
+@keyframes sensepulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
 
 /* ---------- Stage ---------- */
 .stage {
@@ -217,6 +221,19 @@ body {
 .hero-layer { position: absolute; left: 26px; bottom: 6px; width: 96px; height: 110px; z-index: 3; pointer-events: none; }
 .spr-hero { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation: heroBob 3.2s ease-in-out infinite; transform-origin: bottom center; }
 @keyframes heroBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(-1deg); } }
+
+/* gang cameo sprite (right side of scene) */
+.gang-layer { position: absolute; right: 30px; bottom: 8px; width: 70px; height: 104px; z-index: 3; pointer-events: none; }
+.gang-layer .spr-gang { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,.5)); animation: heroBob 3.6s ease-in-out infinite; transform-origin: bottom center; }
+
+/* hero walk / search animations */
+.hero-glass { position: absolute; left: 60px; bottom: 56px; font-size: 1.3rem; opacity: 0; pointer-events: none; }
+.hero-layer.walk .spr-hero { animation: heroWalk .7s ease; }
+@keyframes heroWalk { 0% { transform: translateX(-54px) translateY(0); } 25% { transform: translateX(-30px) translateY(-6px); } 50% { transform: translateX(-14px) translateY(0); } 75% { transform: translateX(-4px) translateY(-4px); } 100% { transform: translateX(0) translateY(0); } }
+.hero-layer.search .spr-hero { animation: heroSearch .9s ease; transform-origin: bottom center; }
+@keyframes heroSearch { 0%,100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(10deg) translateY(3px); } 55% { transform: rotate(8deg) translateY(2px); } 80% { transform: rotate(11deg) translateY(3px); } }
+.hero-layer.search .hero-glass { animation: glassPop .9s ease; }
+@keyframes glassPop { 0% { opacity: 0; transform: scale(.4) rotate(-20deg); } 35% { opacity: 1; transform: scale(1) rotate(0); } 80% { opacity: 1; transform: scale(1) translateY(-2px); } 100% { opacity: 0; transform: scale(.8); } }
 
 .phantom-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; }
 .phantom-layer.show { animation: phantomScare 1.5s ease-out forwards; }
@@ -368,6 +385,21 @@ body {
 .ending-art .spr-sus, .ending-art .spr-phantom { width: 130px; height: 130px; display: inline-block; }
 .ending-art .spr-sus { border-radius: 50%; background: radial-gradient(circle, rgba(123,241,168,.25), transparent 70%); }
 .unmask-tag { font-family: "Creepster", cursive; font-size: 1.4rem; letter-spacing: 2px; color: var(--gold); margin-top: 4px; }
+
+/* gang victory lineup */
+.gang-lineup { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+.gang-lineup .spr-gang { width: 56px; height: 96px; animation: heroBob 3s ease-in-out infinite; }
+.gang-lineup .spr-gang:nth-child(2) { animation-delay: .4s; }
+.gang-lineup .spr-gang:nth-child(3) { animation-delay: .8s; }
+.gang-lineup .spr-gang:nth-child(4) { animation-delay: 1.2s; }
+.gang-cheer { margin-top: 8px; color: var(--accent); font-weight: 700; }
+
+/* minimap */
+.mm-canvas { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
+.mm-svg { width: 100%; height: auto; display: block; }
+.mm-pulse { animation: mmPulse 1.4s ease-in-out infinite; transform-origin: center; }
+@keyframes mmPulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .mm-pulse, .gang-layer .spr-gang, .gang-lineup .spr-gang { animation: none; } }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 #ending-text { color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
 #ending .modal-box { text-align: center; max-width: 560px; }

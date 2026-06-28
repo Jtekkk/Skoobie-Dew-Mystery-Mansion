@@ -421,6 +421,17 @@ const QUESTS = {
   },
 };
 
+/* ---------- The rest of Mystery Inc. (cameos stationed in rooms) ---------- */
+const GANG_SPOTS = {
+  foyer:   { id: "fred",   name: "Fred",   line: 'Fred plants his hands on his hips: "Gang, let\'s split up and search for clues!"' },
+  library: { id: "velma",  name: "Velma",  line: 'Velma pushes up her glasses: "Jinkies! The answer\'s always hiding in the books."' },
+  kitchen: { id: "shaggy", name: "Shaggy", line: 'Shaggy peeks from the pantry: "Like, did somebody say snacks, Scoob? Zoinks!"' },
+  gallery: { id: "daphne", name: "Daphne", line: 'Daphne studies a frame: "These portraits are to die for… just watch out for traps, okay?"' },
+};
+
+/* Rooms where the Phantom might first lurk (kept away from the start). */
+const PHANTOM_START = ["crypt", "attic", "observatory", "greenhouse", "wineCellar"];
+
 /* ---------- Flavor text ---------- */
 const SCARE_LINES = [
   "ZOINKS! The Phantom lunges from the shadows! You steady your nerves with a Scooby Snack.",

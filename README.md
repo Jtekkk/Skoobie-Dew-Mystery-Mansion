@@ -23,6 +23,13 @@ python3 -m http.server 8000
   scene** (themed lighting, silhouetted props, drifting fog, dust motes, cobwebs,
   flickering candlelight), generated in-browser so it ships with the game and
   works fully offline. Respects `prefers-reduced-motion`.
+- **A whole cast of sprites** — Skoobie the detective pup stands in every scene
+  and **walks in / sniffs around** as you move and search; the **Phantom** swoops
+  in on a scare; and the rest of **Mystery Inc.** (Shaggy, Velma, Fred, Daphne)
+  cameo in their favorite rooms and line up to cheer your victory.
+- **A roaming Phantom** — the Phantom now *stalks you room to room* with real
+  pathfinding. Track it on the **🗺️ minimap** and watch the **👻 proximity sense**
+  in the HUD. Get cornered and it'll cost you a Scooby Snack (or your courage).
 - **22 rooms** to explore — including **2 secret rooms** you have to *reveal*
   (the Phantom's Lair behind a piano puzzle, and a Hidden Laboratory behind a
   crooked portrait). Some doors are **locked** and need the right key.
@@ -77,6 +84,8 @@ index.html       # markup + screens (title, difficulty, game, modals)
 css/style.css    # spooky atmospheric theme
 js/sfx.js        # Web Audio sound effects (synthesized, no files)
 js/scenes.js     # layered SVG scene art (palettes + props + atmosphere)
+js/sprites.js    # character sprites (hero, Phantom, suspects, the gang)
+js/minimap.js    # schematic map + roaming-Phantom AI (BFS pathfinding)
 js/data.js       # rooms, suspects, items, clues, puzzles, quests (all content)
 js/game.js       # engine: state, rendering, save/load, puzzles, hints, deduction
 ```
