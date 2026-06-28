@@ -8,7 +8,514 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+<style>
+/* ===== Skoobie-Dew & the Mystery Mansion ===== */
+:root {
+  --bg: #0b0d1a;
+  --bg-2: #141832;
+  --panel: #1b1f3b;
+  --panel-2: #232a52;
+  --ink: #e9e6ff;
+  --muted: #9aa0c8;
+  --accent: #7bf1a8;     /* spooky mint */
+  --accent-2: #b388ff;   /* phantom purple */
+  --gold: #ffd166;
+  --danger: #ff5d73;
+  --line: #2c3360;
+  --shadow: 0 18px 50px rgba(0, 0, 0, .55);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: "Nunito", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 700px at 80% -10%, #2a1d4d 0%, transparent 60%),
+    radial-gradient(900px 600px at 0% 110%, #10324a 0%, transparent 55%),
+    linear-gradient(160deg, var(--bg), var(--bg-2));
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+#app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ---------- Screens ---------- */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* ---------- Title ---------- */
+#title-screen {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  overflow: hidden;
+}
+.title-card {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  padding: 40px 28px;
+  background: rgba(20, 24, 50, .6);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow);
+}
+.kicker {
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  font-size: .75rem;
+  color: var(--accent);
+  font-family: "Special Elite", monospace;
+  margin-bottom: 10px;
+}
+.game-title {
+  font-family: "Creepster", system-ui, cursive;
+  font-weight: 400;
+  line-height: .95;
+  font-size: clamp(2.6rem, 8vw, 5rem);
+  letter-spacing: 2px;
+  text-shadow: 0 0 18px rgba(123, 241, 168, .35), 0 4px 0 #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.game-title .amp {
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: .26em;
+  letter-spacing: .2em;
+  color: var(--accent-2);
+  margin: .15em 0;
+  text-shadow: none;
+}
+.tagline {
+  margin: 18px auto 26px;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.title-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.credits { margin-top: 22px; color: var(--muted); font-family: "Special Elite", monospace; font-size: .85rem; }
+
+/* Fog */
+.fog {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 280px;
+  background: radial-gradient(closest-side, rgba(179, 136, 255, .14), transparent 70%);
+  filter: blur(8px);
+  animation: drift 26s linear infinite;
+  z-index: 1;
+}
+.fog-1 { top: 8%; }
+.fog-2 { bottom: 6%; animation-duration: 36s; animation-direction: reverse; opacity: .7; }
+@keyframes drift {
+  0% { transform: translateX(-12%); }
+  50% { transform: translateX(12%); }
+  100% { transform: translateX(-12%); }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .98rem;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .2s ease, background .2s;
+  color: #0b0d1a;
+}
+.btn:active { transform: translateY(1px) scale(.99); }
+.btn-primary { background: linear-gradient(180deg, var(--accent), #4fcf86); box-shadow: 0 8px 22px rgba(79, 207, 134, .3); }
+.btn-primary:hover { box-shadow: 0 10px 28px rgba(79, 207, 134, .45); }
+.btn-danger { background: linear-gradient(180deg, #ff7d8f, var(--danger)); color: #1a0008; box-shadow: 0 8px 22px rgba(255, 93, 115, .3); }
+.btn-danger:disabled { filter: grayscale(.6) brightness(.7); cursor: not-allowed; box-shadow: none; }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { background: var(--panel-2); }
+.btn.block { width: 100%; }
+
+/* ---------- Panels ---------- */
+.panel {
+  margin: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+.panel.narrow { max-width: 560px; }
+.panel h2 { font-family: "Creepster", cursive; font-weight: 400; font-size: 2rem; letter-spacing: 1px; margin-bottom: 16px; color: #fff; }
+#how-screen { align-items: center; justify-content: center; padding: 24px; }
+.how-list { list-style: none; display: grid; gap: 14px; margin-bottom: 24px; }
+.how-list li { padding-left: 30px; position: relative; color: var(--muted); line-height: 1.5; }
+.how-list li::before { content: "🐾"; position: absolute; left: 0; }
+.how-list strong { color: var(--ink); }
+
+/* ---------- HUD ---------- */
+#game-screen { flex-direction: column; }
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(11, 13, 26, .7);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.hud-left, .hud-right { display: flex; align-items: center; gap: 14px; }
+.hud-room { font-family: "Special Elite", monospace; color: var(--accent); letter-spacing: .05em; }
+.chip {
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  width: 38px; height: 38px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.chip:hover { background: var(--panel); }
+.stat { font-size: .95rem; color: var(--muted); white-space: nowrap; }
+.stat b { color: var(--ink); font-size: 1.05rem; }
+.phantom-sense.warn b { color: var(--gold); }
+.phantom-sense.danger b { color: var(--danger); }
+.phantom-sense.danger { animation: sensepulse 1s ease-in-out infinite; }
+@keyframes sensepulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+
+/* ---------- Stage ---------- */
+.stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  padding: 22px;
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+.scene {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0 0 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  animation: fadeIn .35s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.scene-art {
+  height: 260px;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  background: #0a0a16;
+}
+.scene-bg { position: absolute; inset: 0; z-index: 1; }
+.scene-svg { display: block; width: 100%; height: 100%; }
+
+/* ---- character sprite layers over the scene ---- */
+.hero-layer { position: absolute; left: 26px; bottom: 6px; width: 96px; height: 110px; z-index: 3; pointer-events: none; }
+.spr-hero { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation: heroBob 3.2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes heroBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(-1deg); } }
+
+/* gang cameo sprite (right side of scene) */
+.gang-layer { position: absolute; right: 30px; bottom: 8px; width: 70px; height: 104px; z-index: 3; pointer-events: none; }
+.gang-layer .spr-gang { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,.5)); animation: heroBob 3.6s ease-in-out infinite; transform-origin: bottom center; }
+
+/* hero walk / search animations */
+.hero-glass { position: absolute; left: 60px; bottom: 56px; font-size: 1.3rem; opacity: 0; pointer-events: none; }
+.hero-layer.walk .spr-hero { animation: heroWalk .7s ease; }
+@keyframes heroWalk { 0% { transform: translateX(-54px) translateY(0); } 25% { transform: translateX(-30px) translateY(-6px); } 50% { transform: translateX(-14px) translateY(0); } 75% { transform: translateX(-4px) translateY(-4px); } 100% { transform: translateX(0) translateY(0); } }
+.hero-layer.search .spr-hero { animation: heroSearch .9s ease; transform-origin: bottom center; }
+@keyframes heroSearch { 0%,100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(10deg) translateY(3px); } 55% { transform: rotate(8deg) translateY(2px); } 80% { transform: rotate(11deg) translateY(3px); } }
+.hero-layer.search .hero-glass { animation: glassPop .9s ease; }
+@keyframes glassPop { 0% { opacity: 0; transform: scale(.4) rotate(-20deg); } 35% { opacity: 1; transform: scale(1) rotate(0); } 80% { opacity: 1; transform: scale(1) translateY(-2px); } 100% { opacity: 0; transform: scale(.8); } }
+
+.phantom-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; }
+.phantom-layer.show { animation: phantomScare 1.5s ease-out forwards; }
+.spr-phantom { width: 150px; height: 180px; filter: drop-shadow(0 0 18px rgba(123,241,168,.6)); }
+@keyframes phantomScare {
+  0%   { opacity: 0; transform: translateX(120px) scale(.5) rotate(6deg); }
+  22%  { opacity: .97; transform: translateX(0) scale(1.12) rotate(0deg); }
+  62%  { opacity: .9;  transform: translateX(-6px) scale(1.05); }
+  100% { opacity: 0;  transform: translateX(0) scale(1.3) translateY(-18px); }
+}
+@media (prefers-reduced-motion: reduce) { .spr-hero { animation: none; } .phantom-layer.show { animation-duration: 1.2s; } }
+
+/* SVG atmosphere animations */
+.s-fog  { animation: sFog 22s ease-in-out infinite; }
+.s-fog2 { animation: sFog 30s ease-in-out infinite reverse; }
+@keyframes sFog { 0%,100% { transform: translateX(-40px); } 50% { transform: translateX(40px); } }
+.s-dust { animation: sDust 7s ease-in-out infinite; }
+@keyframes sDust { 0%,100% { transform: translateY(0); opacity: .15; } 50% { transform: translateY(-14px); opacity: .5; } }
+.s-flicker { animation: sFlicker 2.4s steps(3) infinite; transform-origin: center; }
+.s-flicker-slow { animation: sFlicker 5s ease-in-out infinite; }
+@keyframes sFlicker { 0%,100% { opacity: 1; } 45% { opacity: .55; } 70% { opacity: .85; } }
+.s-sway { animation: sSway 6s ease-in-out infinite; transform-origin: top center; }
+@keyframes sSway { 0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+.s-rock { animation: sRock 4s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes sRock { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .s-fog, .s-fog2, .s-dust, .s-flicker, .s-flicker-slow, .s-sway, .s-rock { animation: none; }
+}
+.room-name { font-family: "Creepster", cursive; font-weight: 400; font-size: 2.2rem; letter-spacing: 1px; color: #fff; padding: 22px 26px 6px; }
+.room-desc { padding: 0 26px; color: var(--muted); line-height: 1.6; max-width: 60ch; }
+
+.actions, .exits { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 26px 0; }
+.exits { border-top: 1px dashed var(--line); margin-top: 18px; padding-top: 18px; }
+.exits::before { content: "Exits:"; width: 100%; color: var(--muted); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
+
+.action-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: .92rem;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform .08s, background .15s, border-color .15s;
+}
+.action-btn:hover { background: #2b3468; border-color: var(--accent-2); }
+.action-btn:active { transform: translateY(1px); }
+.action-btn.searched { opacity: .5; cursor: default; }
+.action-btn.searched:hover { background: var(--panel-2); border-color: var(--line); }
+.exit-btn { border-color: var(--accent-2); }
+.exit-btn::before { content: "🚪 "; }
+
+/* ---------- Sidebar ---------- */
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+.log-wrap {
+  flex: 1;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  box-shadow: var(--shadow);
+}
+.log-wrap h3 { font-size: .95rem; color: var(--accent); margin-bottom: 10px; letter-spacing: .04em; }
+.log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; max-height: 52vh; padding-right: 4px; }
+.log-entry {
+  font-size: .9rem;
+  line-height: 1.45;
+  color: var(--muted);
+  padding: 9px 12px;
+  background: var(--bg-2);
+  border-left: 3px solid var(--line);
+  border-radius: 8px;
+  animation: fadeIn .3s ease;
+}
+.log-entry.good { border-left-color: var(--accent); color: var(--ink); }
+.log-entry.scare { border-left-color: var(--danger); color: #ffd2d9; }
+.log-entry.clue { border-left-color: var(--gold); color: #fff3d6; }
+
+/* ---------- Modals ---------- */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(5, 6, 14, .78);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal.open { display: flex; animation: fadeIn .2s ease; }
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+.modal-box h2 { font-family: "Creepster", cursive; font-weight: 400; font-size: 2.2rem; letter-spacing: 1px; color: #fff; margin-bottom: 18px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--panel-2); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px;
+  width: 36px; height: 36px; cursor: pointer; font-size: 1rem;
+}
+.modal-close:hover { background: var(--danger); color: #1a0008; }
+
+.casefile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 22px; }
+.casefile-grid h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+.clue-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.clue-list li {
+  font-size: .92rem; line-height: 1.45;
+  padding: 11px 13px; border-radius: 10px;
+  background: var(--bg-2); border-left: 3px solid var(--gold);
+  color: #fff3d6;
+}
+.clue-list li.muted { border-left-color: var(--line); color: var(--muted); background: transparent; }
+
+.suspects { display: flex; flex-direction: column; gap: 10px; }
+.suspect {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px; border-radius: 12px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  cursor: pointer; transition: border-color .15s, transform .08s;
+  text-align: left; width: 100%; color: var(--ink); font-family: inherit;
+}
+.suspect:hover { border-color: var(--accent-2); }
+.suspect.selected { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,.3); }
+.suspect .face { font-size: 2rem; line-height: 1; flex: 0 0 auto; }
+.suspect .face .spr-sus { width: 48px; height: 48px; display: block; border-radius: 50%; background: rgba(0,0,0,.25); }
+.suspect .who { font-weight: 800; }
+.suspect .role { font-size: .8rem; color: var(--muted); }
+
+.accuse-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 18px; }
+.muted { color: var(--muted); }
+
+/* Ending */
+.ending-art { font-size: 4.5rem; text-align: center; margin-bottom: 10px; animation: pop .4s ease; }
+.ending-art .spr-sus, .ending-art .spr-phantom { width: 130px; height: 130px; display: inline-block; }
+.ending-art .spr-sus { border-radius: 50%; background: radial-gradient(circle, rgba(123,241,168,.25), transparent 70%); }
+.unmask-tag { font-family: "Creepster", cursive; font-size: 1.4rem; letter-spacing: 2px; color: var(--gold); margin-top: 4px; }
+
+/* gang victory lineup */
+.gang-lineup { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+.gang-lineup .spr-gang { width: 56px; height: 96px; animation: heroBob 3s ease-in-out infinite; }
+.gang-lineup .spr-gang:nth-child(2) { animation-delay: .4s; }
+.gang-lineup .spr-gang:nth-child(3) { animation-delay: .8s; }
+.gang-lineup .spr-gang:nth-child(4) { animation-delay: 1.2s; }
+.gang-cheer { margin-top: 8px; color: var(--accent); font-weight: 700; }
+
+/* minimap */
+.mm-canvas { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
+.mm-svg { width: 100%; height: auto; display: block; }
+.mm-pulse { animation: mmPulse 1.4s ease-in-out infinite; transform-origin: center; }
+@keyframes mmPulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .mm-pulse, .gang-layer .spr-gang, .gang-lineup .spr-gang { animation: none; } }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+#ending-text { color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+#ending .modal-box { text-align: center; max-width: 560px; }
+#ending .btn { margin: 0 auto; }
+
+/* Scare flash */
+.scare-flash { animation: scareFlash .5s ease; }
+@keyframes scareFlash {
+  0%, 100% { background-color: transparent; }
+  30% { background-color: rgba(255, 93, 115, .25); }
+}
+
+/* ---------- Difficulty cards ---------- */
+.diff-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.diff-card {
+  text-align: left; font-family: inherit; cursor: pointer;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; color: var(--ink); transition: border-color .15s, transform .08s, box-shadow .2s;
+}
+.diff-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.4); }
+.diff-card h3 { font-family: "Creepster", cursive; font-weight: 400; font-size: 1.6rem; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
+.diff-card p { color: var(--muted); font-size: .9rem; line-height: 1.45; margin-bottom: 12px; }
+.diff-stats { font-size: .78rem; color: var(--accent); font-family: "Special Elite", monospace; }
+
+/* ---------- HUD additions ---------- */
+.chip.wide { width: auto; padding: 0 12px; font-size: .85rem; font-family: inherit; font-weight: 700; }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Inventory ---------- */
+.inv-wrap {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.inv-wrap h3 { font-size: .9rem; color: var(--accent); margin-bottom: 10px; }
+.inv { display: flex; flex-wrap: wrap; gap: 8px; }
+.inv-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px 6px 10px; font-size: .82rem; color: var(--ink); cursor: pointer;
+  font-family: inherit; transition: border-color .15s, transform .08s;
+}
+.inv-item:hover { border-color: var(--gold); transform: translateY(-1px); }
+.inv-item span { font-weight: 700; }
+.small { font-size: .82rem; }
+
+.side-buttons { display: flex; gap: 10px; }
+.side-buttons .btn { flex: 1; }
+
+/* ---------- Locked exits ---------- */
+.exit-btn.locked { border-color: var(--danger); opacity: .8; }
+.exit-btn.locked::before { content: ""; }
+
+/* ---------- Mysteries ---------- */
+.quest-list { display: flex; flex-direction: column; gap: 12px; }
+.quest { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.quest.done { border-color: var(--accent); }
+.q-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.q-icon { font-size: 1.4rem; }
+.q-name { font-weight: 800; }
+.q-status { margin-left: auto; font-family: "Special Elite", monospace; font-size: .85rem; color: var(--gold); }
+.quest.done .q-status { color: var(--accent); }
+.q-blurb { color: var(--muted); font-size: .88rem; line-height: 1.45; }
+
+/* ---------- Puzzle ---------- */
+.puzzle-box { max-width: 480px; text-align: center; }
+.pz-area { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 22px 0 10px; }
+.pz-code {
+  font-family: "Special Elite", monospace; font-size: 2rem; letter-spacing: .5em; text-align: center;
+  width: 220px; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg-2); color: #fff;
+}
+.pz-code:focus { outline: none; border-color: var(--accent); }
+.pz-display {
+  min-height: 44px; font-size: 1.6rem; letter-spacing: .2em;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 16px; min-width: 240px;
+}
+.pz-wrong { color: var(--danger); font-size: 1rem; letter-spacing: normal; }
+.pz-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.pz-key {
+  font-family: inherit; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+  padding: 14px 20px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--ink); transition: transform .08s, border-color .15s;
+}
+.pz-key:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.pz-key:active { transform: translateY(0); }
+.pz-hint { color: var(--gold); font-size: .9rem; margin-top: 8px; min-height: 1.3em; }
+.shake { animation: shake .35s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+/* ---------- Case file bonus clue ---------- */
+.clue-list li.bonus { border-left-color: var(--accent-2); color: #e6d9ff; }
+.ending-bonus { color: var(--accent); font-weight: 700; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .stage { grid-template-columns: 1fr; }
+  .casefile-grid { grid-template-columns: 1fr; }
+  .log { max-height: 200px; }
+  .hud-right { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .stat { font-size: .82rem; }
+  .chip.wide { font-size: .8rem; }
+}
+
+</style>
 </head>
 <body>
   <div id="app">
@@ -170,11 +677,1473 @@
     </div>
   </div>
 
-  <script src="js/sfx.js"></script>
-  <script src="js/scenes.js"></script>
-  <script src="js/sprites.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/minimap.js"></script>
-  <script src="js/game.js"></script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — sound FX =====
+   All sounds are synthesized with the Web Audio API, so there are no audio
+   files to ship and everything works offline. A single AudioContext is
+   created lazily on the first user gesture (browsers require this). */
+const Sfx = (function () {
+  "use strict";
+  const MUTE_KEY = "skoobie-dew-muted";
+  let ctx = null;
+  let muted = false;
+  try { muted = localStorage.getItem(MUTE_KEY) === "1"; } catch (_) {}
+
+  function ensure() {
+    if (muted) return null;
+    if (!ctx) {
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (_) { return null; }
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+
+  // A single tone with an ADSR-ish envelope.
+  function tone(freq, start, dur, type, peak) {
+    const c = ctx;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(peak || 0.18, start + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(start);
+    osc.stop(start + dur + 0.02);
+    return osc;
+  }
+
+  // A burst of filtered noise — good for creaks, scares and whooshes.
+  function noise(start, dur, freq, q, peak) {
+    const c = ctx;
+    const n = Math.floor(c.sampleRate * dur);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) data[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const filt = c.createBiquadFilter();
+    filt.type = "bandpass";
+    filt.frequency.value = freq || 800;
+    filt.Q.value = q || 1;
+    const gain = c.createGain();
+    gain.gain.setValueAtTime(peak || 0.12, start);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    src.connect(filt).connect(gain).connect(c.destination);
+    src.start(start);
+    src.stop(start + dur);
+  }
+
+  function seq(notes, type, gap) {
+    const c = ensure(); if (!c) return;
+    let t = c.currentTime;
+    notes.forEach((n) => {
+      tone(n[0], t, n[1], type, n[2]);
+      t += (gap != null ? gap : n[1] * 0.8);
+    });
+  }
+
+  const api = {
+    blip() { const c = ensure(); if (!c) return; tone(420, c.currentTime, 0.07, "square", 0.06); },
+    door() {
+      const c = ensure(); if (!c) return;
+      const o = tone(220, c.currentTime, 0.5, "sawtooth", 0.05);
+      o.frequency.exponentialRampToValueAtTime(90, c.currentTime + 0.45);
+      noise(c.currentTime, 0.5, 500, 4, 0.04);
+    },
+    clue() { seq([[660, 0.12], [880, 0.18, 0.18]], "sine"); },
+    item() { seq([[523, 0.08], [659, 0.08], [784, 0.14]], "triangle"); },
+    snack() { seq([[700, 0.05], [900, 0.07]], "square", 0.05); },
+    puzzle() { seq([[523, 0.12], [659, 0.12], [784, 0.12], [1047, 0.26]], "triangle"); },
+    scare() {
+      const c = ensure(); if (!c) return;
+      const o = tone(180, c.currentTime, 0.6, "sawtooth", 0.22);
+      o.frequency.exponentialRampToValueAtTime(50, c.currentTime + 0.55);
+      noise(c.currentTime, 0.6, 300, 0.7, 0.2);
+      tone(190, c.currentTime, 0.6, "square", 0.06);
+    },
+    win() { seq([[523, 0.14], [659, 0.14], [784, 0.14], [1047, 0.16], [784, 0.12], [1047, 0.4]], "triangle"); },
+    lose() { seq([[440, 0.2], [392, 0.2], [330, 0.2], [262, 0.5]], "sawtooth"); },
+    hint() { seq([[988, 0.1], [1319, 0.22, 0.12]], "sine"); },
+    error() { const c = ensure(); if (!c) return; tone(160, c.currentTime, 0.18, "square", 0.12); },
+
+    isMuted() { return muted; },
+    toggleMute() {
+      muted = !muted;
+      try { localStorage.setItem(MUTE_KEY, muted ? "1" : "0"); } catch (_) {}
+      if (!muted) this.blip();
+      return muted;
+    },
+  };
+  return api;
+})();
+
+</script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — scene art =====
+   Immersive room art rendered as layered SVG, so it ships with the game and
+   works fully offline (no image files, no network). Each scene is composed from
+   a themed PALETTE + a few silhouetted PROPS + atmosphere (light, fog, dust,
+   cobwebs, vignette). Driven by the SCENES table keyed on room id. */
+const Scenes = (function () {
+  "use strict";
+  const W = 800, H = 300, FLOOR = 186;
+
+  /* zone palettes: sky gradient, floor, silhouette ink, rim light, glow */
+  const PALETTES = {
+    royal:  { sky: ["#3a2660", "#140a28"], floor: "#170d2b", sil: "#0c0718", rim: "#b388ff", light: "#d9c2ff" },
+    amber:  { sky: ["#4a3416", "#1a0f05"], floor: "#241606", sil: "#160c03", rim: "#ffb347", light: "#ffe2a8" },
+    teal:   { sky: ["#16463a", "#08130f"], floor: "#0d2019", sil: "#06120d", rim: "#5fd6a8", light: "#c8f5e0" },
+    cold:   { sky: ["#193049", "#060c14"], floor: "#0c1825", sil: "#050a12", rim: "#6fb3ff", light: "#cfe2ff" },
+    violet: { sky: ["#3d1d56", "#120720"], floor: "#1d0f2d", sil: "#0d0618", rim: "#d18bff", light: "#f3d6ff" },
+    night:  { sky: ["#1d2450", "#070a18"], floor: "#0f1430", sil: "#060a18", rim: "#8fa8ff", light: "#d6e0ff" },
+    eerie:  { sky: ["#134029", "#05130c"], floor: "#0a2014", sil: "#04110a", rim: "#6dff9f", light: "#c6ffd8" },
+  };
+
+  /* ---- helper drawing bits ---- */
+  const flame = (x, y, p) => `<circle cx="${x}" cy="${y}" r="9" fill="${p.light}" opacity=".25" class="s-flicker"/><ellipse cx="${x}" cy="${y}" rx="2.4" ry="4.5" fill="${p.light}" class="s-flicker"/>`;
+  const moon = (x, y, p) => `<circle cx="${x}" cy="${y}" r="60" fill="${p.light}" opacity=".10"/><circle cx="${x}" cy="${y}" r="30" fill="${p.light}" opacity=".9"/><circle cx="${x + 12}" cy="${y - 6}" r="26" fill="${p.sky[1]}" opacity=".55"/>`;
+  const beam = (x, p) => `<polygon points="${x - 34},40 ${x + 34},40 ${x + 150},${FLOOR + 8} ${x - 150},${FLOOR + 8}" fill="${p.light}" opacity=".07" class="s-flicker-slow"/>`;
+  const cobweb = (cx, cy, s, p) => {
+    const m = s < 0 ? -1 : 1, a = Math.abs(s);
+    let w = `<g opacity=".5" stroke="${p.rim}" stroke-width="1" fill="none" opacity=".22">`;
+    for (let i = 1; i <= 3; i++) w += `<path d="M${cx},${cy} q ${m * 40 * a},${8 * i * a} ${m * 70 * a},${i * 22 * a}"/>`;
+    w += `<path d="M${cx},${cy} L${cx + m * 78 * a},${cy} M${cx},${cy} L${cx + m * 55 * a},${cy + 55 * a} M${cx},${cy} L${cx + m * 20 * a},${cy + 75 * a}"/></g>`;
+    return w;
+  };
+
+  /* ---- prop library: each (c,p) -> svg, drawn around c.x with base on FLOOR ---- */
+  const PROPS = {
+    chandelier: (c, p) => `<g transform="translate(${c.x},0)" class="s-sway"><line x1="0" y1="0" x2="0" y2="42" stroke="${p.sil}" stroke-width="3"/><ellipse cx="0" cy="58" rx="46" ry="9" fill="none" stroke="${p.sil}" stroke-width="5"/><path d="M0 42 L0 58" stroke="${p.sil}" stroke-width="3"/>${flame(-46, 52, p)}${flame(-23, 50, p)}${flame(0, 49, p)}${flame(23, 50, p)}${flame(46, 52, p)}</g>`,
+    window: (c, p) => `<g>${moon(c.x, 70, p)}<path d="M${c.x - 48} 130 L${c.x - 48} 56 Q${c.x} 6 ${c.x + 48} 56 L${c.x + 48} 130 Z" fill="none" stroke="${p.sil}" stroke-width="7"/><line x1="${c.x}" y1="20" x2="${c.x}" y2="130" stroke="${p.sil}" stroke-width="5"/><line x1="${c.x - 48}" y1="84" x2="${c.x + 48}" y2="84" stroke="${p.sil}" stroke-width="5"/></g>${beam(c.x, p)}`,
+    shelf: (c, p) => { const w = c.w || 110, rows = 4; let s = `<g transform="translate(${c.x},0)"><rect x="${-w / 2}" y="${FLOOR - 150}" width="${w}" height="150" fill="${p.sil}"/>`; for (let i = 0; i < rows; i++) { const y = FLOOR - 138 + i * 34; let k = 0; for (let j = -w / 2 + 8; j < w / 2 - 8; j += 11, k++) { const m = (k + i) % 3; s += `<rect x="${j}" y="${y - (6 + m * 4)}" width="8" height="${10 + m * 6}" fill="${p.rim}" opacity="${0.25 + (k % 2) * 0.15}"/>`; } } return s + "</g>"; },
+    table: (c, p) => { const w = c.w || 150; return `<g transform="translate(${c.x},0)"><rect x="${-w / 2}" y="${FLOOR - 44}" width="${w}" height="12" fill="${p.sil}"/><rect x="${-w / 2 + 8}" y="${FLOOR - 32}" width="9" height="32" fill="${p.sil}"/><rect x="${w / 2 - 17}" y="${FLOOR - 32}" width="9" height="32" fill="${p.sil}"/>${c.items ? c.items.map((it, i) => flame(-w / 2 + 24 + i * 26, FLOOR - 52, p)).join("") : ""}</g>`; },
+    desk: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-70" y="${FLOOR - 46}" width="140" height="14" fill="${p.sil}"/><rect x="-66" y="${FLOOR - 32}" width="40" height="32" fill="${p.sil}"/><rect x="26" y="${FLOOR - 32}" width="40" height="32" fill="${p.sil}"/>${flame(-44, FLOOR - 56, p)}</g>`,
+    safe: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-34" y="${FLOOR - 70}" width="68" height="64" rx="5" fill="${p.sil}"/><circle cx="0" cy="${FLOOR - 38}" r="13" fill="none" stroke="${p.rim}" stroke-width="3" opacity=".6"/><circle cx="0" cy="${FLOOR - 38}" r="3" fill="${p.rim}" opacity=".6"/></g>`,
+    pillar: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-18" y="20" width="36" height="${FLOOR - 20}" fill="${p.sil}"/><rect x="-26" y="14" width="52" height="14" fill="${p.sil}"/><rect x="-26" y="${FLOOR - 14}" width="52" height="16" fill="${p.sil}"/></g>`,
+    column: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-15" y="30" width="30" height="${FLOOR - 30}" fill="${p.sil}"/><rect x="-22" y="24" width="44" height="12" fill="${p.sil}"/></g>`,
+    sarcophagus: (c, p) => `<g transform="translate(${c.x},0)"><polygon points="-70,${FLOOR} -56,${FLOOR - 40} 56,${FLOOR - 40} 70,${FLOOR}" fill="${p.sil}"/><ellipse cx="0" cy="${FLOOR - 40}" rx="56" ry="13" fill="${p.sil}"/><ellipse cx="0" cy="${FLOOR - 46}" rx="40" ry="9" fill="none" stroke="${p.rim}" stroke-width="2" opacity=".4"/><circle cx="0" cy="${FLOOR - 60}" r="8" fill="none" stroke="${p.rim}" stroke-width="2" opacity=".4"/></g>`,
+    piano: (c, p) => `<g transform="translate(${c.x},0)"><path d="M-95 ${FLOOR} L-95 ${FLOOR - 50} L70 ${FLOOR - 60} L70 ${FLOOR} Z" fill="${p.sil}"/><rect x="-95" y="${FLOOR - 64}" width="120" height="10" fill="${p.sil}"/><path d="M-95 ${FLOOR - 50} L-95 ${FLOOR - 44} L40 ${FLOOR - 50} L40 ${FLOOR - 56} Z" fill="${p.light}" opacity=".75"/><rect x="-92" y="${FLOOR - 6}" width="8" height="6" fill="${p.sil}"/><rect x="60" y="${FLOOR - 8}" width="8" height="8" fill="${p.sil}"/></g>`,
+    fern: (c, p) => { const s = c.s || 1; let f = `<g transform="translate(${c.x},${FLOOR}) scale(${s})">`; for (let i = -3; i <= 3; i++) f += `<path d="M0 0 Q${i * 14} -50 ${i * 26} -${70 - Math.abs(i) * 6}" stroke="${p.sil}" stroke-width="6" fill="none" stroke-linecap="round"/>`; f += `<path d="M0 0 Q4 -40 0 -78" stroke="${p.rim}" stroke-width="3" fill="none" opacity=".4"/></g>`; return f; },
+    pod: (c, p) => `<g transform="translate(${c.x},${FLOOR})"><path d="M0 0 Q-30 -50 0 -86 Q30 -50 0 0" fill="${p.sil}"/><ellipse cx="0" cy="-58" rx="16" ry="26" fill="${p.rim}" opacity=".22" class="s-flicker-slow"/><path d="M-14 0 Q-40 -30 -52 -64" stroke="${p.sil}" stroke-width="5" fill="none"/><path d="M14 0 Q40 -30 52 -64" stroke="${p.sil}" stroke-width="5" fill="none"/></g>`,
+    telescope: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-10" y="${FLOOR - 26}" width="20" height="26" fill="${p.sil}"/><polygon points="-10,${FLOOR - 26} 10,${FLOOR - 26} 30,${FLOOR - 30} 24,${FLOOR - 36} -4,${FLOOR - 32}" fill="${p.sil}"/><rect x="-30" y="${FLOOR - 96} " width="80" height="22" rx="11" fill="${p.sil}" transform="rotate(-26 0 ${FLOOR - 60})"/><circle cx="48" cy="${FLOOR - 92}" r="11" fill="${p.light}" opacity=".7" transform="rotate(-26 0 ${FLOOR - 60})"/></g>`,
+    altar: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-56" y="${FLOOR - 40}" width="112" height="40" fill="${p.sil}"/><rect x="-64" y="${FLOOR - 48}" width="128" height="10" fill="${p.sil}"/><g transform="translate(-22,0)"><rect x="-5" y="${FLOOR - 70}" width="10" height="22" fill="${p.light}" opacity=".85"/><ellipse cx="0" cy="${FLOOR - 70}" rx="9" ry="5" fill="${p.light}" opacity=".85"/></g><g transform="translate(22,0)"><rect x="-5" y="${FLOOR - 70}" width="10" height="22" fill="${p.sil}"/><ellipse cx="0" cy="${FLOOR - 70}" rx="9" ry="5" fill="${p.sil}"/></g></g>`,
+    bed: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-90" y="20" width="14" height="${FLOOR - 20}" fill="${p.sil}"/><rect x="76" y="20" width="14" height="${FLOOR - 20}" fill="${p.sil}"/><rect x="-90" y="14" width="180" height="14" fill="${p.sil}"/><rect x="-86" y="${FLOOR - 50}" width="172" height="50" fill="${p.sil}"/><rect x="-78" y="${FLOOR - 62}" width="60" height="16" rx="7" fill="${p.rim}" opacity=".3"/><path d="M-90 28 Q-70 70 -78 ${FLOOR - 50}" stroke="${p.sil}" stroke-width="10" fill="none"/></g>`,
+    cradle: (c, p) => `<g transform="translate(${c.x},0)" class="s-rock"><path d="M-50 ${FLOOR - 14} Q0 ${FLOOR + 8} 50 ${FLOOR - 14} L40 ${FLOOR - 54} L-40 ${FLOOR - 54} Z" fill="${p.sil}"/><rect x="-44" y="${FLOOR - 60}" width="88" height="10" fill="${p.sil}"/>${[-30, -15, 0, 15, 30].map(x => `<line x1="${x}" y1="${FLOOR - 54}" x2="${x}" y2="${FLOOR - 18}" stroke="${p.rim}" stroke-width="2" opacity=".3"/>`).join("")}</g>`,
+    trunk: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-50" y="${FLOOR - 44}" width="100" height="44" rx="4" fill="${p.sil}"/><path d="M-50 ${FLOOR - 44} Q0 ${FLOOR - 66} 50 ${FLOOR - 44}" fill="${p.sil}"/><rect x="-50" y="${FLOOR - 30}" width="100" height="7" fill="${p.rim}" opacity=".35"/><rect x="-6" y="${FLOOR - 30}" width="12" height="14" fill="${p.rim}" opacity=".5"/></g>`,
+    mirror: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-30" y="${FLOOR - 120}" width="60" height="120" rx="30" fill="${p.sil}"/><rect x="-22" y="${FLOOR - 112}" width="44" height="104" rx="22" fill="${p.light}" opacity=".14"/><path d="M-10 ${FLOOR - 108} L6 ${FLOOR - 40} M2 ${FLOOR - 96} L-6 ${FLOOR - 30}" stroke="${p.sky[1]}" stroke-width="2" opacity=".8"/></g>`,
+    barrel: (c, p) => `<g transform="translate(${c.x},0)"><path d="M-26 ${FLOOR} Q-34 ${FLOOR - 30} -26 ${FLOOR - 56} L26 ${FLOOR - 56} Q34 ${FLOOR - 30} 26 ${FLOOR} Z" fill="${p.sil}"/><rect x="-30" y="${FLOOR - 40}" width="60" height="5" fill="${p.rim}" opacity=".3"/><rect x="-30" y="${FLOOR - 20}" width="60" height="5" fill="${p.rim}" opacity=".3"/></g>`,
+    hearth: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-70" y="${FLOOR - 110}" width="140" height="110" fill="${p.sil}"/><rect x="-46" y="${FLOOR - 70}" width="92" height="70" fill="${p.sky[1]}"/><path d="M-46 ${FLOOR - 70} L-46 ${FLOOR - 84} L46 ${FLOOR - 84} L46 ${FLOOR - 70} Z" fill="${p.sil}"/>${flame(-16, FLOOR - 18, p)}${flame(2, FLOOR - 22, p)}${flame(20, FLOOR - 16, p)}<ellipse cx="0" cy="${FLOOR - 12}" rx="42" ry="14" fill="${p.rim}" opacity=".18"/></g>`,
+    door: (c, p) => `<g transform="translate(${c.x},0)"><path d="M${-(c.w || 40)} ${FLOOR} L${-(c.w || 40)} ${FLOOR - 130} Q0 ${FLOOR - 158} ${c.w || 40} ${FLOOR - 130} L${c.w || 40} ${FLOOR} Z" fill="${p.sil}"/><line x1="0" y1="${FLOOR - 140}" x2="0" y2="${FLOOR}" stroke="${p.sky[1]}" stroke-width="3"/><circle cx="${(c.w || 40) - 12}" cy="${FLOOR - 64}" r="4" fill="${p.rim}" opacity=".6"/><circle cx="${-(c.w || 40) + 12}" cy="${FLOOR - 64}" r="4" fill="${p.rim}" opacity=".6"/></g>`,
+    portrait: (c, p) => `<g transform="translate(${c.x},${c.crooked ? 6 : 0}) rotate(${c.crooked ? -8 : 0})"><rect x="-32" y="${FLOOR - 150}" width="64" height="84" fill="${p.sil}"/><rect x="-24" y="${FLOOR - 142}" width="48" height="68" fill="${p.rim}" opacity=".18"/><circle cx="0" cy="${FLOOR - 118}" r="11" fill="${p.sil}"/><path d="M-16 ${FLOOR - 78} Q0 ${FLOOR - 100} 16 ${FLOOR - 78} Z" fill="${p.sil}"/></g>`,
+    staircase: (c, p) => { let s = `<g transform="translate(${c.x},0)">`; for (let i = 0; i < 7; i++) s += `<rect x="${-110 + i * 16}" y="${FLOOR - i * 22}" width="${150 - i * 16}" height="22" fill="${p.sil}" opacity="${1 - i * 0.04}"/>`; s += `<rect x="-118" y="20" width="10" height="${FLOOR - 20}" fill="${p.sil}"/></g>`; return s; },
+    maskStand: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-4" y="${FLOOR - 70}" width="8" height="70" fill="${p.sil}"/><ellipse cx="0" cy="${FLOOR - 92}" rx="22" ry="28" fill="${p.sil}"/><ellipse cx="-8" cy="${FLOOR - 98}" rx="4" ry="6" fill="${p.rim}" opacity=".7"/><ellipse cx="8" cy="${FLOOR - 98}" rx="4" ry="6" fill="${p.rim}" opacity=".7"/></g>`,
+    hooks: (c, p) => `<g transform="translate(${c.x},0)">${[-30, 0, 30].map((x, i) => `<line x1="${x}" y1="30" x2="${x}" y2="44" stroke="${p.sil}" stroke-width="3"/><path d="M${x - 16} 44 Q${x} 110 ${x + 12} ${FLOOR - 30}" fill="${p.sil}" opacity="${0.8 - i * 0.1}"/>`).join("")}</g>`,
+    labtable: (c, p) => `<g transform="translate(${c.x},0)"><rect x="-70" y="${FLOOR - 44}" width="140" height="12" fill="${p.sil}"/><rect x="-64" y="${FLOOR - 32}" width="9" height="32" fill="${p.sil}"/><rect x="55" y="${FLOOR - 32}" width="9" height="32" fill="${p.sil}"/><path d="M-40 ${FLOOR - 44} L-46 ${FLOOR - 78} L-30 ${FLOOR - 78} Z" fill="${p.sil}"/><ellipse cx="-38" cy="${FLOOR - 78}" rx="8" ry="4" fill="${p.rim}" opacity=".5" class="s-flicker-slow"/><rect x="0" y="${FLOOR - 74}" width="20" height="30" rx="4" fill="${p.sil}"/><rect x="3" y="${FLOOR - 60}" width="14" height="16" fill="${p.rim}" opacity=".3" class="s-flicker-slow"/><rect x="34" y="${FLOOR - 64}" width="14" height="20" fill="${p.sil}"/></g>`,
+    pots: (c, p) => `<g transform="translate(${c.x},0)">${[-40, -10, 22, 50].map((x, i) => `<line x1="${x}" y1="20" x2="${x}" y2="${36 + i * 6}" stroke="${p.sil}" stroke-width="2"/><path d="M${x - 14} ${36 + i * 6} a14 14 0 0 0 28 0 Z" fill="${p.sil}"/>`).join("")}</g>`,
+    wallnotes: (c, p) => `<g transform="translate(${c.x},0)">${["#5fb0ff", "#5fd687", "#ffd166", "#ff6b81"].map((col, i) => `<circle cx="${-30 + i * 20}" cy="${FLOOR - 120}" r="8" fill="${col}" opacity=".85"/>`).join("")}</g>`,
+  };
+
+  /* floor-level effects (chasm, hatch, grate) drawn over the floor */
+  const FLOOREFX = {
+    chasm: (c, p) => `<ellipse cx="${c.x || 400}" cy="${FLOOR + 60}" rx="170" ry="40" fill="#000"/><ellipse cx="${c.x || 400}" cy="${FLOOR + 54}" rx="140" ry="28" fill="#000" opacity=".7"/>`,
+    hatch: (c, p) => `<g transform="translate(${c.x},${FLOOR + 44})"><polygon points="-60,0 60,0 90,40 -90,40" fill="${p.sil}"/><polygon points="-40,6 40,6 56,30 -56,30" fill="#000" opacity=".6"/><rect x="-6" y="6" width="12" height="6" fill="${p.rim}" opacity=".6"/></g>`,
+    grate: (c, p) => `<g transform="translate(${c.x},${FLOOR + 52})"><ellipse cx="0" cy="0" rx="34" ry="14" fill="#000" opacity=".7"/>${[-18, -6, 6, 18].map(x => `<line x1="${x}" y1="-11" x2="${x}" y2="11" stroke="${p.rim}" stroke-width="2" opacity=".5"/>`).join("")}<ellipse cx="6" cy="2" rx="3" ry="2" fill="${p.light}" opacity=".8"/></g>`,
+    rug: (c, p) => `<ellipse cx="${c.x || 400}" cy="${FLOOR + 58}" rx="150" ry="34" fill="${p.rim}" opacity=".10"/>`,
+  };
+
+  /* ---- per-room scene definitions ---- */
+  const SCENES = {
+    foyer:        { pal: "royal",  light: true, props: [{ t: "chandelier", x: 400 }, { t: "portrait", x: 110 }, { t: "door", x: 690, w: 46 }] },
+    library:      { pal: "amber",  props: [{ t: "shelf", x: 120, w: 150 }, { t: "shelf", x: 690, w: 130 }, { t: "desk", x: 410 }] },
+    study:        { pal: "amber",  props: [{ t: "desk", x: 300 }, { t: "safe", x: 560 }, { t: "shelf", x: 720, w: 90 }] },
+    diningHall:   { pal: "teal",   props: [{ t: "chandelier", x: 400 }, { t: "table", x: 400, w: 260, items: [1, 1, 1] }] },
+    kitchen:      { pal: "teal",   props: [{ t: "pots", x: 360 }, { t: "table", x: 380, w: 150 }, { t: "barrel", x: 690 }] },
+    pantry:       { pal: "teal",   props: [{ t: "shelf", x: 200, w: 150 }, { t: "shelf", x: 600, w: 150 }] },
+    cellar:       { pal: "cold",   props: [{ t: "table", x: 230, w: 150, items: [1] }, { t: "barrel", x: 660 }], efx: [{ t: "hatch", x: 470 }] },
+    wineCellar:   { pal: "cold",   props: [{ t: "shelf", x: 150, w: 150 }, { t: "shelf", x: 660, w: 150 }, { t: "barrel", x: 410 }] },
+    catacombs:    { pal: "cold",   props: [{ t: "pillar", x: 110 }, { t: "pillar", x: 690 }], efx: [{ t: "chasm", x: 410 }] },
+    crypt:        { pal: "cold",   props: [{ t: "pillar", x: 120 }, { t: "sarcophagus", x: 410 }, { t: "pillar", x: 700 }] },
+    ballroom:     { pal: "violet", light: true, props: [{ t: "column", x: 110 }, { t: "chandelier", x: 400 }, { t: "hearth", x: 680 }, { t: "column", x: 250 }] },
+    gallery:      { pal: "violet", props: [{ t: "portrait", x: 120 }, { t: "portrait", x: 250 }, { t: "portrait", x: 540 }, { t: "portrait", x: 660, crooked: true }] },
+    conservatory: { pal: "violet", light: true, props: [{ t: "fern", x: 110, s: 1.1 }, { t: "piano", x: 430 }, { t: "fern", x: 720, s: 1.2 }], efx: [{ t: "grate", x: 300 }] },
+    greenhouse:   { pal: "eerie",  props: [{ t: "pod", x: 150 }, { t: "pod", x: 320 }, { t: "fern", x: 470, s: 1 }, { t: "pod", x: 620 }] },
+    stairs:       { pal: "night",  props: [{ t: "staircase", x: 410 }, { t: "portrait", x: 120 }] },
+    attic:        { pal: "night",  web: true, props: [{ t: "mirror", x: 130 }, { t: "trunk", x: 380 }, { t: "maskStand", x: 640 }] },
+    landing:      { pal: "night",  props: [{ t: "door", x: 130, w: 40 }, { t: "door", x: 400, w: 40 }, { t: "door", x: 670, w: 40 }], efx: [{ t: "rug", x: 400 }] },
+    masterBedroom:{ pal: "night",  props: [{ t: "mirror", x: 130 }, { t: "bed", x: 430 }, { t: "table", x: 690, w: 90, items: [1] }] },
+    nursery:      { pal: "night",  props: [{ t: "wallnotes", x: 400 }, { t: "cradle", x: 410 }, { t: "table", x: 680, w: 90 }] },
+    observatory:  { pal: "night",  light: true, props: [{ t: "telescope", x: 430 }] },
+    chapel:       { pal: "violet", light: true, props: [{ t: "altar", x: 400 }, { t: "pillar", x: 110 }, { t: "pillar", x: 700 }] },
+    lair:         { pal: "eerie",  props: [{ t: "hooks", x: 140 }, { t: "maskStand", x: 420 }, { t: "table", x: 660, w: 110, items: [1, 1] }] },
+    lab:          { pal: "eerie",  props: [{ t: "shelf", x: 140, w: 110 }, { t: "labtable", x: 430 }, { t: "labtable", x: 680 }] },
+  };
+
+  function build(roomId) {
+    const u = roomId;
+    const sc = SCENES[roomId] || SCENES.foyer;
+    const p = PALETTES[sc.pal];
+    const props = (sc.props || []).map(c => PROPS[c.t](c, p)).join("");
+    const efx = (sc.efx || []).map(c => FLOOREFX[c.t](c, p)).join("");
+    const fog = `<g filter="url(#sBlur-${u})"><ellipse class="s-fog" cx="200" cy="${FLOOR + 40}" rx="180" ry="34" fill="${p.light}" opacity=".05"/><ellipse class="s-fog2" cx="600" cy="${FLOOR + 70}" rx="220" ry="40" fill="${p.light}" opacity=".06"/></g>`;
+    let dust = "";
+    for (let i = 0; i < 7; i++) dust += `<circle class="s-dust" cx="${80 + i * 100}" cy="${60 + (i % 4) * 50}" r="${1 + (i % 2)}" fill="${p.light}" opacity=".4" style="animation-delay:${i * 0.7}s"/>`;
+    const webs = sc.web ? cobweb(0, 14, 1, p) + cobweb(W, 14, -1, p) : cobweb(0, 8, 0.6, p) + cobweb(W, 8, -0.6, p);
+
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" class="scene-svg" role="img" aria-label="${roomId} scene">
+      <defs>
+        <linearGradient id="sSky-${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.sky[0]}"/><stop offset="1" stop-color="${p.sky[1]}"/></linearGradient>
+        <linearGradient id="sFloor-${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.floor}"/><stop offset="1" stop-color="${p.sky[1]}"/></linearGradient>
+        <radialGradient id="sVig-${u}" cx="0.5" cy="0.42" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.72"/></radialGradient>
+        <filter id="sBlur-${u}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+      </defs>
+      <rect width="${W}" height="${H}" fill="url(#sSky-${u})"/>
+      ${sc.light ? PROPS.window({ x: 400 }, p) : ""}
+      <rect y="${FLOOR}" width="${W}" height="${H - FLOOR}" fill="url(#sFloor-${u})"/>
+      <line x1="0" y1="${FLOOR}" x2="${W}" y2="${FLOOR}" stroke="${p.rim}" stroke-width="1" opacity=".15"/>
+      ${webs}
+      ${props}
+      ${efx}
+      ${fog}
+      ${dust}
+      <rect width="${W}" height="${H}" fill="url(#sVig-${u})"/>
+    </svg>`;
+  }
+
+  return { build };
+})();
+
+</script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — character sprites =====
+   Hand-built SVG characters so they ship with the game and work offline:
+   the hero pup who stands in every scene, the Phantom who swoops in on a
+   scare, and a portrait bust for each suspect (Case File + unmasking). */
+const Sprites = (function () {
+  "use strict";
+
+  /* The hero: "Skoobie", a plucky cartoon Great Dane detective. */
+  function hero() {
+    const B = "#b9824a", D = "#7a4f25", L = "#e0b079", N = "#1a1014", C = "#3ad29a";
+    return `<svg viewBox="0 0 130 150" class="spr-hero" aria-label="Skoobie the detective pup">
+      <ellipse cx="66" cy="142" rx="46" ry="9" fill="#000" opacity=".28"/>
+      <!-- tail -->
+      <path d="M104 96 Q128 86 122 64 Q116 74 108 78 Q112 90 98 100 Z" fill="${B}"/>
+      <!-- legs -->
+      <rect x="40" y="108" width="13" height="34" rx="6" fill="${D}"/>
+      <rect x="58" y="110" width="13" height="32" rx="6" fill="${B}"/>
+      <rect x="80" y="108" width="13" height="34" rx="6" fill="${D}"/>
+      <rect x="96" y="110" width="13" height="32" rx="6" fill="${B}"/>
+      <ellipse cx="46" cy="143" rx="9" ry="5" fill="${L}"/><ellipse cx="86" cy="143" rx="9" ry="5" fill="${L}"/>
+      <!-- body -->
+      <ellipse cx="74" cy="92" rx="42" ry="27" fill="${B}"/>
+      <ellipse cx="70" cy="100" rx="30" ry="17" fill="${L}" opacity=".55"/>
+      <ellipse cx="92" cy="80" rx="13" ry="10" fill="${D}"/><ellipse cx="58" cy="98" rx="9" ry="7" fill="${D}" opacity=".7"/>
+      <!-- neck + head -->
+      <path d="M44 96 Q24 86 30 60 L56 66 Q58 86 60 92 Z" fill="${B}"/>
+      <ellipse cx="34" cy="50" rx="24" ry="21" fill="${B}"/>
+      <!-- snout -->
+      <ellipse cx="13" cy="58" rx="16" ry="11" fill="${L}"/>
+      <ellipse cx="6" cy="56" rx="6" ry="5" fill="${N}"/>
+      <path d="M13 62 Q13 70 6 70" stroke="${N}" stroke-width="2" fill="none"/>
+      <!-- ears -->
+      <path d="M44 32 Q66 26 60 58 Q50 56 46 44 Z" fill="${D}"/>
+      <path d="M28 30 Q22 6 40 18 Q40 34 36 42 Z" fill="${D}"/>
+      <!-- eyes -->
+      <ellipse cx="30" cy="44" rx="7" ry="8" fill="#fff"/><ellipse cx="44" cy="44" rx="7" ry="8" fill="#fff"/>
+      <circle cx="32" cy="46" r="3.4" fill="${N}"/><circle cx="46" cy="46" r="3.4" fill="${N}"/>
+      <circle cx="33" cy="45" r="1.1" fill="#fff"/><circle cx="47" cy="45" r="1.1" fill="#fff"/>
+      <ellipse cx="38" cy="38" rx="9" ry="6" fill="${D}" opacity=".5"/>
+      <!-- collar + tag -->
+      <path d="M40 64 Q34 72 26 68" stroke="${C}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="30" cy="72" r="4.5" fill="#ffd166" stroke="${D}" stroke-width="1"/>
+    </svg>`;
+  }
+
+  /* The Phantom that appears during a scare. */
+  function phantom() {
+    return `<svg viewBox="0 0 150 180" class="spr-phantom" aria-label="The Phantom">
+      <defs><filter id="phGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>
+      <ellipse cx="75" cy="96" rx="62" ry="80" fill="#7bf1a8" opacity=".18" filter="url(#phGlow)"/>
+      <!-- billowing cloak -->
+      <path d="M75 8 Q128 16 130 92 Q132 150 132 168
+               Q120 156 110 168 Q98 154 86 168 Q75 152 64 168
+               Q52 154 40 168 Q30 156 18 168 Q20 150 20 92 Q22 16 75 8 Z"
+            fill="#f2fff7" opacity=".95"/>
+      <path d="M75 8 Q24 16 20 92 Q20 130 20 150 Q34 120 36 92 Q40 30 75 18 Z" fill="#bfe9d2" opacity=".5"/>
+      <!-- raised arms -->
+      <path d="M22 86 Q-2 70 8 52 Q18 60 30 70 Z" fill="#f2fff7" opacity=".92"/>
+      <path d="M128 86 Q152 70 142 52 Q132 60 120 70 Z" fill="#f2fff7" opacity=".92"/>
+      <!-- glowing eyes -->
+      <ellipse cx="56" cy="64" rx="9" ry="14" fill="#06210f"/><ellipse cx="94" cy="64" rx="9" ry="14" fill="#06210f"/>
+      <ellipse cx="56" cy="62" rx="4" ry="7" fill="#7bf1a8" class="s-flicker"/><ellipse cx="94" cy="62" rx="4" ry="7" fill="#7bf1a8" class="s-flicker"/>
+      <path d="M62 96 Q75 88 88 96" stroke="#06210f" stroke-width="4" fill="none"/>
+    </svg>`;
+  }
+
+  /* Suspect portrait busts (head + shoulders). */
+  const SUS = {
+    cragg(s) { return wrap("#3f4a3a", `
+      <ellipse cx="50" cy="48" rx="22" ry="23" fill="#d8b48c"/>
+      <path d="M26 40 Q50 16 74 40 Q72 30 50 26 Q28 30 26 40 Z" fill="#6b7280"/>
+      <ellipse cx="50" cy="33" rx="26" ry="9" fill="#6b7280"/>
+      <path d="M32 44 q6 -5 12 0" stroke="#9aa0a6" stroke-width="3" fill="none"/>
+      <path d="M56 44 q6 -5 12 0" stroke="#9aa0a6" stroke-width="3" fill="none"/>
+      <circle cx="40" cy="50" r="2.6" fill="#26210f"/><circle cx="62" cy="50" r="2.6" fill="#26210f"/>
+      <path d="M38 64 q12 -6 24 0" stroke="#8a8f98" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M40 60 Q50 56 60 60" stroke="#7a4a2a" stroke-width="2" fill="none"/>`); },
+    esmerelda(s) { return wrap("#5b3a86", `
+      <ellipse cx="50" cy="49" rx="21" ry="22" fill="#c98a5e"/>
+      <path d="M27 46 Q26 20 50 18 Q74 20 73 46 Q66 30 50 30 Q34 30 27 46 Z" fill="#8b5cf6"/>
+      <path d="M27 46 Q22 60 30 70 L36 50 Z" fill="#7c3aed"/>
+      <circle cx="31" cy="62" r="4" fill="none" stroke="#ffd166" stroke-width="2"/>
+      <ellipse cx="42" cy="50" rx="4" ry="3" fill="#fff"/><ellipse cx="60" cy="50" rx="4" ry="3" fill="#fff"/>
+      <circle cx="42" cy="50" r="2.2" fill="#2a1533"/><circle cx="60" cy="50" r="2.2" fill="#2a1533"/>
+      <path d="M37 44 q5 -3 10 0M55 44 q5 -3 10 0" stroke="#3a2050" stroke-width="2" fill="none"/>
+      <path d="M44 62 q6 4 12 0" stroke="#b23a5b" stroke-width="3" fill="none" stroke-linecap="round"/>`); },
+    hollow(s) { return wrap("#6b5436", `
+      <ellipse cx="50" cy="50" rx="21" ry="22" fill="#e0c0a0"/>
+      <rect x="30" y="14" width="40" height="22" rx="3" fill="#1c1c22"/>
+      <rect x="24" y="34" width="52" height="6" rx="3" fill="#1c1c22"/>
+      <circle cx="42" cy="50" r="2.6" fill="#26210f"/><circle cx="60" cy="51" r="2.6" fill="#26210f"/>
+      <circle cx="60" cy="51" r="8" fill="none" stroke="#caa15a" stroke-width="2"/>
+      <path d="M67 56 Q72 66 66 74" stroke="#caa15a" stroke-width="1.5" fill="none"/>
+      <path d="M36 46 q6 -3 12 0" stroke="#5a4326" stroke-width="2.5" fill="none"/>
+      <path d="M40 63 q10 -7 20 0 q-10 5 -20 0 Z" fill="#6b4f2a"/>`); },
+    sterling(s) { return wrap("#1f2937", `
+      <ellipse cx="50" cy="49" rx="21" ry="22" fill="#d9b08c"/>
+      <path d="M28 44 Q30 22 50 22 Q70 22 72 44 Q64 32 50 33 Q40 30 36 38 Q32 40 28 44 Z" fill="#15151c"/>
+      <path d="M36 45 q5 -3 10 0M54 45 q5 -3 10 0" stroke="#2a1c10" stroke-width="2" fill="none"/>
+      <circle cx="41" cy="51" r="2.6" fill="#26210f"/><circle cx="59" cy="51" r="2.6" fill="#26210f"/>
+      <path d="M42 63 q8 3 16 -1" stroke="#7a4a30" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M30 78 L44 70 L50 78 L56 70 L70 78 Z" fill="#f4f4f5"/>
+      <path d="M50 78 L46 92 L54 92 Z" fill="#c0354a"/>`); },
+  };
+  function wrap(coat, inner) {
+    return `<svg viewBox="0 0 100 100" class="spr-sus" aria-hidden="true">
+      <path d="M16 100 Q16 76 50 74 Q84 76 84 100 Z" fill="${coat}"/>
+      <rect x="42" y="64" width="16" height="14" fill="#d9b08c" opacity=".9"/>
+      ${inner}</svg>`;
+  }
+  function suspect(id) { return (SUS[id] || SUS.cragg)(); }
+
+  /* The rest of Mystery Inc. — chibi cameo figures. */
+  const GANG = {
+    shaggy: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Shaggy">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="24" y="84" width="9" height="34" rx="4" fill="#6b4f2a"/><rect x="37" y="84" width="9" height="34" rx="4" fill="#6b4f2a"/>
+      <path d="M22 50 Q35 44 48 50 L46 88 L24 88 Z" fill="#7cc14e"/>
+      <rect x="14" y="52" width="8" height="34" rx="4" fill="#7cc14e"/><rect x="48" y="52" width="8" height="34" rx="4" fill="#7cc14e"/>
+      <circle cx="35" cy="30" r="16" fill="#d8b48c"/>
+      <path d="M19 28 Q18 8 35 10 Q52 8 51 28 Q44 18 35 19 Q26 18 19 28 Z" fill="#7a5a32"/>
+      <circle cx="29" cy="30" r="2" fill="#26210f"/><circle cx="41" cy="30" r="2" fill="#26210f"/>
+      <path d="M28 39 q7 4 14 0" stroke="#5a4326" stroke-width="1.6" fill="none"/>
+      <g fill="#5a4326">${[26,32,38,44].map(x=>`<circle cx="${x}" cy="42" r="1"/>`).join("")}</g></svg>`,
+    velma: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Velma">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="25" y="86" width="8" height="32" rx="4" fill="#c45a2a"/><rect x="37" y="86" width="8" height="32" rx="4" fill="#c45a2a"/>
+      <path d="M22 80 Q35 74 48 80 L50 92 L20 92 Z" fill="#9b2d33"/>
+      <path d="M22 50 Q35 45 48 50 L48 82 L22 82 Z" fill="#e08a3c"/>
+      <path d="M22 52 h-7 v28 h7 ZM48 52 h7 v28 h-7 Z" fill="#e08a3c"/>
+      <path d="M48 52 l8 0 0 8" fill="none"/>
+      <circle cx="35" cy="32" r="16" fill="#e6c4a0"/>
+      <path d="M18 32 Q16 12 35 12 Q54 12 52 32 L52 24 Q35 16 18 24 Z" fill="#7a4a26"/>
+      <path d="M18 30 q0 12 4 16 L24 30Z M52 30 q0 12 -4 16 L46 30Z" fill="#7a4a26"/>
+      <circle cx="29" cy="32" r="6" fill="none" stroke="#2a2a2a" stroke-width="1.6"/><circle cx="42" cy="32" r="6" fill="none" stroke="#2a2a2a" stroke-width="1.6"/>
+      <line x1="35" y1="31" x2="36" y2="31" stroke="#2a2a2a" stroke-width="1.6"/>
+      <circle cx="29" cy="32" r="2" fill="#26210f"/><circle cx="42" cy="32" r="2" fill="#26210f"/>
+      <g fill="#c98a5e">${[27,31,39,43].map(x=>`<circle cx="${x}" cy="40" r=".9"/>`).join("")}</g></svg>`,
+    fred: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Fred">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="24" y="86" width="9" height="32" rx="4" fill="#2f5c8f"/><rect x="37" y="86" width="9" height="32" rx="4" fill="#2f5c8f"/>
+      <path d="M21 50 Q35 44 49 50 L48 88 L22 88 Z" fill="#f0f0f3"/>
+      <rect x="13" y="52" width="9" height="34" rx="4" fill="#f0f0f3"/><rect x="48" y="52" width="9" height="34" rx="4" fill="#f0f0f3"/>
+      <path d="M30 50 L40 50 L35 62 Z" fill="#e8762a"/>
+      <circle cx="35" cy="30" r="16" fill="#e6c4a0"/>
+      <path d="M19 26 Q20 9 35 10 Q50 9 51 26 Q44 17 35 18 Q26 17 19 26 Z" fill="#f1d27a"/>
+      <circle cx="29" cy="30" r="2" fill="#26210f"/><circle cx="41" cy="30" r="2" fill="#26210f"/>
+      <path d="M29 38 q6 3 12 0" stroke="#b98a4a" stroke-width="1.4" fill="none"/></svg>`,
+    daphne: `<svg viewBox="0 0 70 124" class="spr-gang" aria-label="Daphne">
+      <ellipse cx="35" cy="120" rx="20" ry="4" fill="#000" opacity=".25"/>
+      <rect x="27" y="92" width="7" height="26" rx="3" fill="#e6c4a0"/><rect x="37" y="92" width="7" height="26" rx="3" fill="#e6c4a0"/>
+      <path d="M22 52 Q35 46 48 52 L52 94 L18 94 Z" fill="#7e4ca8"/>
+      <rect x="15" y="54" width="8" height="32" rx="4" fill="#7e4ca8"/><rect x="47" y="54" width="8" height="32" rx="4" fill="#7e4ca8"/>
+      <path d="M24 50 q11 6 22 0 l-2 -6 q-9 4 -18 0 Z" fill="#3ad29a"/>
+      <circle cx="35" cy="30" r="16" fill="#e6c4a0"/>
+      <path d="M17 30 Q15 8 35 9 Q55 8 53 30 Q56 50 49 60 L46 30 Q35 18 24 30 L21 60 Q14 50 17 30 Z" fill="#d9622e"/>
+      <circle cx="29" cy="31" r="2" fill="#26210f"/><circle cx="41" cy="31" r="2" fill="#26210f"/>
+      <path d="M30 39 q5 3 10 0" stroke="#b23a5b" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+  };
+  function gang(id) { return GANG[id] || ""; }
+
+  return { hero, phantom, suspect, gang };
+})();
+
+</script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — game data =====
+   All content lives here. The engine (game.js) stays generic: rooms expose
+   `actions` (interactions) and `exits`, each driven by small callbacks that
+   receive the game api `g`. The main mystery is procedurally assembled — one
+   suspect is secretly the Phantom and the clues describe THAT suspect, so the
+   deduction is real, not scripted. Puzzles, items, traps, secret rooms and
+   side-mysteries are all optional depth layered on top. */
+
+/* ---------- Difficulty ---------- */
+const DIFFICULTIES = {
+  easy:   { id: "easy",   name: "Sleuth",    blurb: "Cozy mystery. Frequent snacks, gentle scares, traps just bruise your courage. Unlimited hints.",
+            snacks: 5, courage: 100, scare: 0.15, lethalTraps: false, hints: Infinity },
+  normal: { id: "normal", name: "Detective", blurb: "The real deal. The Phantom prowls and the death traps are deadly. Three hints.",
+            snacks: 3, courage: 100, scare: 0.28, lethalTraps: true,  hints: 3 },
+  spooky: { id: "spooky", name: "Phantom",   blurb: "For brave pups only. Scarce snacks, relentless scares, one hint, no mercy.",
+            snacks: 2, courage: 80,  scare: 0.42, lethalTraps: true,  hints: 1 },
+};
+
+/* ---------- Suspects (each trait value is unique across suspects) ---------- */
+const SUSPECTS = [
+  { id: "cragg", name: "Old Man Cragg", role: "The Grumpy Caretaker", face: "🧓",
+    cloak: "a mud-stained gray", tool: "a rusty lantern",
+    motive: "to scare off buyers and keep his cottage on the grounds",
+    tell: "the heavy clomp of work boots", lair: "the damp cellar workshop",
+    trinket: "a brass caretaker's whistle" },
+  { id: "esmerelda", name: "Madame Esmerelda", role: "The Mysterious Fortune-Teller", face: "🔮",
+    cloak: "a shimmering violet", tool: "a trail of incense smoke",
+    motive: "to convince the town the manor is cursed and boost her séance business",
+    tell: "the jingle of a dozen bangle bracelets", lair: "the moonlit conservatory",
+    trinket: "a cracked crystal-ball shard" },
+  { id: "hollow", name: "Professor Hollow", role: "The Eccentric Historian", face: "🎩",
+    cloak: "a dusty tweed", tool: "a magnifying glass",
+    motive: "to hunt the hidden Dew fortune without interruptions",
+    tell: "the squeak of a leather elbow patch", lair: "the dusty library loft",
+    trinket: "a monogrammed briar pipe" },
+  { id: "sterling", name: "Mr. Sterling", role: "The Slick Real-Estate Developer", face: "🤵",
+    cloak: "a sleek black", tool: "a silver pocket watch",
+    motive: "to crash the manor's price and buy the land for cheap",
+    tell: "the sharp click of polished dress shoes", lair: "the grand ballroom balcony",
+    trinket: "a platinum cufflink" },
+];
+
+/* ---------- Clues. `core: true` clues are the four needed to accuse. ---------- */
+const CLUES = {
+  cloak:   { key: "cloak",   icon: "🧵", core: true,  text: c => `A snagged thread, torn from ${c.cloak} cloak.` },
+  tool:    { key: "tool",    icon: "🔧", core: true,  text: c => `Left behind: ${c.tool} — the Phantom's calling card.` },
+  motive:  { key: "motive",  icon: "📜", core: true,  text: c => `A scribbled note reveals the motive: ${c.motive}.` },
+  tell:    { key: "tell",    icon: "👂", core: true,  text: c => `Echoing through the dark, you hear ${c.tell}.` },
+  lair:    { key: "lair",    icon: "🦇", core: false, text: c => `This hideout belongs to whoever skulks about ${c.lair}.` },
+  trinket: { key: "trinket", icon: "💍", core: false, text: c => `Dropped in a struggle: ${c.trinket}.` },
+};
+const CORE_CLUE_IDS = Object.keys(CLUES).filter(k => CLUES[k].core);
+const TOTAL_CLUES = Object.keys(CLUES).length;
+
+/* ---------- Items ---------- */
+const ITEMS = {
+  lantern:   { name: "Brass Lantern",   icon: "🏮", desc: "Throws warm light into the darkest corners." },
+  crowbar:   { name: "Crowbar",         icon: "🛠️", desc: "Rusty but sturdy — perfect for prying things open." },
+  rope:      { name: "Coil of Rope",    icon: "🪢", desc: "Long and strong. Good for crossing a gap." },
+  gasMask:   { name: "Gas Mask",        icon: "😷", desc: "Filters out noxious fumes and choking spores." },
+  oilCan:    { name: "Oil Can",         icon: "🛢️", desc: "Loosens the most stubbornly rusted mechanism." },
+  magnet:    { name: "Horseshoe Magnet",icon: "🧲", desc: "Pulls metal out of places your paw won't fit." },
+  sheet:     { name: "Sheet Music",     icon: "🎼", desc: "A faded lullaby — four notes circled in red." },
+  brassKey:  { name: "Brass Key",       icon: "🗝️", desc: "Ornate and heavy. Opens a grand door." },
+  silverKey: { name: "Silver Key",      icon: "🔑", desc: "Cold to the touch, cut for a fine lock." },
+  locketA:   { name: "Locket Half",     icon: "📿", desc: "Half a tarnished silver locket." },
+  locketB:   { name: "Locket Hinge",    icon: "🔗", desc: "The clasp and hinge of an old locket." },
+  locketC:   { name: "Locket Portrait", icon: "🖼️", desc: "A tiny painted portrait that fits inside a locket." },
+  mapA:       { name: "Map: West Half",  icon: "🗺️", desc: "Half a treasure map. The crease hides the rest." },
+  mapB:       { name: "Map: East Half",  icon: "🧭", desc: "The other half of the treasure map." },
+};
+
+/* ---------- Rooms ----------
+   exit forms: "id"  OR  { to, secret:(g)=>bool, locked:(g)=>bool, lockedMsg }
+   action: { id, label, icon, show?(g), once?, risky?, do(g) } */
+const START_ROOM = "foyer";
+
+const ROOMS = {
+  foyer: {
+    name: "The Grand Foyer", art: "🚪",
+    desc: "A cavernous entry hall. A dusty chandelier sways though there's no breeze, and a moth-eaten portrait of old Cornelius Dew glowers down at you.",
+    exits: ["library", "diningHall", "ballroom", "stairs"],
+    actions: [
+      { id: "clock", label: "Inspect the grandfather clock", icon: "🕰️", once: true, risky: true,
+        do: g => { g.note("The clock stopped at midnight. Tucked behind the pendulum: a single Scooby Snack!"); g.snack(1); } },
+    ],
+  },
+
+  library: {
+    name: "The Dusty Library", art: "📚",
+    desc: "Floor-to-ceiling shelves sag with mildewed books. A reading lamp flickers over an open ledger, and one bookcase sits suspiciously ajar.",
+    exits: ["foyer", "study"],
+    actions: [
+      { id: "ledger", label: "Read the open ledger", icon: "📜", once: true, risky: true,
+        do: g => { g.clue("motive"); g.set("safeHint"); g.note('Scrawled in a margin: "Sealed the fortune the year the manor burned — 1888."', "clue"); } },
+      { id: "shelves", label: "Search the shelves", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("sheet"); g.set("starHint"); g.note("Behind a hollow book you find faded SHEET MUSIC and a dog-eared star chart (Orion → Lyra → Draco)."); } },
+    ],
+  },
+
+  study: {
+    name: "The Hidden Study", art: "🕯️",
+    desc: "Behind the bookcase: a cramped study thick with old pipe smoke. Papers are strewn about, and a heavy iron safe is set into the wall.",
+    exits: ["library"],
+    actions: [
+      { id: "desk", label: "Search the cluttered desk", icon: "🔍", once: true, risky: true,
+        do: g => { g.clue("tool"); } },
+      { id: "safe", label: "Try the wall safe", icon: "🔐", do: g => g.puzzle("safe") },
+    ],
+  },
+
+  diningHall: {
+    name: "The Dining Hall", art: "🍽️",
+    desc: "A banquet table set for a feast that never came. Cobwebs drape the silverware and a single chair lies toppled on the floor.",
+    exits: ["foyer", "kitchen"],
+    actions: [
+      { id: "table", label: "Search under the table", icon: "🔍", once: true, risky: true,
+        do: g => { g.note("Only dust, a dropped fork, and the unmistakable feeling of being watched."); } },
+    ],
+  },
+
+  kitchen: {
+    name: "The Creaky Kitchen", art: "🍲",
+    desc: "Copper pots hang like sleeping bats. The pantry door is ajar, and a drawer rattles loose beneath the counter.",
+    exits: ["diningHall", "pantry", "cellar"],
+    actions: [
+      { id: "drawer", label: "Rummage the rattling drawer", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("oilCan"); } },
+    ],
+  },
+
+  pantry: {
+    name: "The Pantry", art: "🥫",
+    desc: "Shelves of ancient preserves — and, gloriously, a tin marked SCOOBY SNACKS. A toolbox sits on the bottom shelf.",
+    exits: ["kitchen"],
+    actions: [
+      { id: "snacks", label: "Grab Scooby Snacks", icon: "🦴",
+        do: g => { const n = 1 + Math.floor(g.rng() * 2); g.snack(n); g.note(`You snag ${n} Scooby Snack${n > 1 ? "s" : ""} from the tin. Crunch!`, "good"); g.sfx("snack"); } },
+      { id: "toolbox", label: "Open the toolbox", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("crowbar"); } },
+    ],
+  },
+
+  cellar: {
+    name: "The Damp Cellar", art: "🪤",
+    desc: "Stone steps lead down to a workbench and a bolted iron hatch in the floor. Something skitters just past the lantern light.",
+    exits: ["kitchen", "wineCellar",
+      { to: "catacombs", locked: g => !g.flag("hatchOpen"), lockedMsg: "The iron hatch is bolted shut. You'd need to pry it open." }],
+    actions: [
+      { id: "bench", label: "Search the workbench", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("lantern"); } },
+      { id: "listen", label: "Stand still and listen", icon: "👂", once: true, risky: true,
+        do: g => { g.clue("tell"); } },
+      { id: "hatch", label: "Pry open the iron hatch", icon: "🛠️", show: g => g.has("crowbar") && !g.flag("hatchOpen"),
+        do: g => { g.set("hatchOpen"); g.sfx("door"); g.note("You jam the crowbar under the hatch and HEAVE. It groans open onto a black stairwell down to the catacombs.", "good"); } },
+    ],
+  },
+
+  wineCellar: {
+    name: "The Wine Cellar", art: "🍷",
+    desc: "Rows of cobwebbed bottles. One rack is pulled out from the wall, and a canvas sack has been hidden behind it.",
+    exits: ["cellar"],
+    actions: [
+      { id: "sack", label: "Open the hidden sack", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("gasMask"); g.note("Inside the sack: a GAS MASK. Now why would anyone hide one of those down here…?"); } },
+    ],
+  },
+
+  catacombs: {
+    name: "The Catacombs", art: "💀",
+    desc: "Carved stone passages reek of damp earth. A yawning chasm splits the floor — the far ledge, and the crypt beyond, lie across the dark.",
+    exits: ["cellar",
+      { to: "crypt", locked: g => !g.flag("chasmCrossed"), lockedMsg: "The chasm still blocks the way to the crypt." }],
+    actions: [
+      { id: "dark", label: "Too dark to go on", icon: "🌑", show: g => !g.has("lantern"),
+        do: g => { g.note("Without a light you can't see a single step. Best not stumble around near that chasm.", "scare"); } },
+      { id: "chasm", label: "Cross the bottomless chasm", icon: "🕳️", show: g => g.has("lantern") && !g.flag("chasmCrossed"), risky: true,
+        do: g => {
+          if (g.has("rope")) {
+            g.set("chasmCrossed"); g.sfx("item");
+            g.note("You lash the rope to a stone fang and swing across to the far ledge. The crypt door creaks open ahead.", "good");
+          } else {
+            g.trap("You take a running leap into the dark… and there is no far ledge within reach. ZOINKS — the Phantom's cackle follows you down into the black.",
+              "The chasm is too wide to jump. You'll need a good, strong rope to cross.");
+          }
+        } },
+    ],
+  },
+
+  crypt: {
+    name: "The Family Crypt", art: "⚰️",
+    desc: "Stone sarcophagi of the Dew line, lid carvings worn smooth by centuries. One lid sits slightly askew.",
+    exits: ["catacombs"],
+    actions: [
+      { id: "tomb", label: "Search the askew sarcophagus", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("locketA"); g.note("Half a tarnished locket rests on the cold stone, as if left as an offering."); } },
+    ],
+  },
+
+  ballroom: {
+    name: "The Grand Ballroom", art: "🪩",
+    desc: "A vast parquet floor under a cracked dome. A grand hearth dominates the far wall, its mantle carved with vines.",
+    exits: ["foyer", "conservatory", "gallery"],
+    actions: [
+      { id: "floor", label: "Search the dusty floor", icon: "🔍", once: true, risky: true,
+        do: g => { g.note("Scuffs in the dust trace a waltz no one danced. Spooky."); } },
+      { id: "hearth", label: "Reach behind the loose hearth-stone", icon: "💎", show: g => g.flag("treasureLocated") && !g.flag("treasureTaken"),
+        do: g => { g.set("treasureTaken"); g.sfx("puzzle"); g.note("Behind the hearth-stone: the lost DEW FORTUNE, a chest of gold doubloons! Jinkies, you're rich… well, the museum will be.", "good"); } },
+    ],
+  },
+
+  gallery: {
+    name: "The Portrait Gallery", art: "🖼️",
+    desc: "Generations of Dews glare from gilded frames. One portrait — a stern admiral — hangs noticeably crooked.",
+    exits: ["ballroom",
+      { to: "lab", secret: g => g.flag("labOpen") }],
+    actions: [
+      { id: "frames", label: "Search beneath the frames", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("magnet"); } },
+      { id: "portrait", label: "Straighten the crooked portrait", icon: "🖐️", show: g => !g.flag("labOpen"),
+        do: g => { g.set("labOpen"); g.sfx("door"); g.note("The portrait clicks — and the whole frame swings aside, revealing a SECRET LABORATORY behind the wall!", "good"); } },
+    ],
+  },
+
+  conservatory: {
+    name: "The Moonlit Conservatory", art: "🌿",
+    desc: "Glass walls fogged with mist. Overgrown ferns claw at a grand piano. A rusted drain grate sits in the floor, something glinting below.",
+    exits: ["ballroom", "greenhouse",
+      { to: "lair", secret: g => g.flag("lairOpen") }],
+    actions: [
+      { id: "grate", label: "Fish in the drain grate", icon: "🧲", show: g => g.has("magnet") && !g.has("silverKey"),
+        do: g => { g.take("silverKey"); g.note("Your magnet drags a SILVER KEY up through the grate. Someone dropped it in a hurry."); } },
+      { id: "grateDark", label: "Something glints in the drain", icon: "🔦", show: g => !g.has("magnet") && !g.has("silverKey"),
+        do: g => { g.note("A key glints down in the drain, but it's wedged out of paw's reach. If only you had something magnetic…"); } },
+      { id: "piano", label: "Play the grand piano", icon: "🎹", show: g => !g.flag("lairOpen"),
+        do: g => g.puzzle("piano") },
+    ],
+  },
+
+  greenhouse: {
+    name: "The Overgrown Greenhouse", art: "🪴",
+    desc: "A jungle of exotic blooms gone feral. Strange pods bulge among the leaves, twitching when you're not looking.",
+    exits: ["conservatory"],
+    actions: [
+      { id: "pods", label: "Search the bulging pods", icon: "🔍", once: true, risky: true,
+        do: g => {
+          if (g.has("gasMask")) {
+            g.note("Mask on, you poke a pod — it bursts in a cloud of spores that would've dropped you cold. Pinned beneath it: a coil of climbing ROPE.", "good");
+            g.take("rope");
+          } else {
+            g.trap("A pod bursts in your face, gushing choking green spores! You reel back, gasping, courage draining away.",
+              "Those pods look like they'd release something nasty. Cover your face before you go poking them.");
+          }
+        } },
+    ],
+  },
+
+  stairs: {
+    name: "The Grand Staircase", art: "🪜",
+    desc: "A sweeping staircase groans under every step. The upstairs landing splits toward several doors; a ladder climbs to the attic.",
+    exits: ["foyer", "attic", "landing"],
+    actions: [],
+  },
+
+  attic: {
+    name: "The Spooky Attic", art: "🕸️",
+    desc: "Trunks, dress forms, and a cracked mirror loom in the gloom. Bats rustle in the rafters — exactly where a Phantom would hide.",
+    exits: ["stairs"],
+    actions: [
+      { id: "trunk", label: "Search the old steamer trunk", icon: "🔍", once: true, risky: true,
+        do: g => { g.clue("cloak"); g.take("rope"); g.note("Coiled atop the costumes: a length of stout ROPE. Might come in handy."); } },
+    ],
+  },
+
+  landing: {
+    name: "The Upstairs Landing", art: "🛋️",
+    desc: "A carpeted gallery of doors. Brass nameplates read MASTER BEDROOM, NURSERY, OBSERVATORY, and a narrow door to the chapel.",
+    exits: ["stairs", "nursery", "chapel",
+      { to: "masterBedroom", locked: g => !g.has("brassKey"), lockedMsg: "The master bedroom is locked. It would take a fine brass key." },
+      { to: "observatory", locked: g => !g.has("silverKey"), lockedMsg: "The observatory door is locked, cut for a slender silver key." }],
+    actions: [],
+  },
+
+  masterBedroom: {
+    name: "The Master Bedroom", art: "🛏️",
+    desc: "A four-poster bed draped in moth-eaten velvet. A vanity mirror is cracked clean down the middle.",
+    exits: ["landing"],
+    actions: [
+      { id: "vanity", label: "Search the vanity drawers", icon: "🔍", once: true, risky: true,
+        do: g => { g.take("locketC"); g.snack(2); g.note("A locket portrait and a stash of two Scooby Snacks, hidden among the lace."); } },
+    ],
+  },
+
+  nursery: {
+    name: "The Nursery", art: "🧸",
+    desc: "A cradle rocks gently on its own. A dusty music box sits on the shelf, its crank seized solid with rust. Four colored notes are painted on the wall.",
+    exits: ["landing"],
+    actions: [
+      { id: "oil", label: "Oil the rusted music box", icon: "🛢️", show: g => g.has("oilCan") && !g.flag("boxOiled"),
+        do: g => { g.set("boxOiled"); g.note("A few drops of oil and the crank turns freely again. Now it might actually play."); } },
+      { id: "play", label: "Wind the music box", icon: "🎵", show: g => g.flag("boxOiled"), do: g => g.puzzle("musicbox") },
+      { id: "seized", label: "The music box is seized solid", icon: "🔍", show: g => !g.has("oilCan") && !g.flag("boxOiled"),
+        do: g => { g.note("The crank won't budge — decades of rust. Some oil would free it."); } },
+    ],
+  },
+
+  observatory: {
+    name: "The Observatory", art: "🔭",
+    desc: "A domed tower open to the night. A great brass telescope points at a dial of constellations waiting to be aligned.",
+    exits: ["landing"],
+    actions: [
+      { id: "scope", label: "Align the constellation dial", icon: "✨", do: g => g.puzzle("stars") },
+    ],
+  },
+
+  chapel: {
+    name: "The Manor Chapel", art: "⛪",
+    desc: "A tiny chapel gone to ruin. On the altar stand two goblets — one gold, one silver — beneath a worn Latin inscription.",
+    exits: ["landing"],
+    actions: [
+      { id: "altar", label: "Study the altar inscription", icon: "🔍", once: true, risky: true,
+        do: g => { g.set("chaliceWisdom"); g.note('It reads: "The humble cup of GOLD restores; the proud cup of silver is the poisoner\'s due." Good to know.', "clue"); } },
+      { id: "gold", label: "Sip from the GOLD goblet", icon: "🏆",
+        do: g => { g.note("Cool, sweet water — and a wave of calm courage flows through you!", "good"); g.courage(35); g.sfx("item"); } },
+      { id: "silver", label: "Sip from the silver goblet", icon: "🥤",
+        do: g => { g.trap("The silver goblet's wine sears your throat — poison! The chapel spins and goes dark.",
+            "Two goblets, one inscription. Read the altar before you go drinking strange wine."); } },
+    ],
+  },
+
+  /* ===== SECRET ROOM 1 — revealed by the piano puzzle ===== */
+  lair: {
+    name: "The Phantom's Lair", art: "🦇",
+    desc: "A hidden den behind the conservatory wall. Disguises hang on hooks, greasepaint litters a table, and a half-finished Phantom mask leers from a stand.",
+    exits: ["conservatory"],
+    actions: [
+      { id: "den", label: "Ransack the disguise table", icon: "🔍", once: true, risky: true,
+        do: g => { g.clue("lair"); g.set("foundLair"); g.note("This is where the Phantom suits up. The whole hoax is run from right here!", "clue"); } },
+    ],
+  },
+
+  /* ===== SECRET ROOM 2 — revealed by the crooked portrait ===== */
+  lab: {
+    name: "The Hidden Laboratory", art: "⚗️",
+    desc: "A cramped lab of bubbling beakers and fog machines — the workshop of the haunting. A glove was dropped mid-experiment.",
+    exits: ["gallery"],
+    actions: [
+      { id: "bench", label: "Examine the cluttered lab bench", icon: "🔍", once: true, risky: true,
+        do: g => { g.clue("trinket"); g.courage(15); g.note("Fog machines, glow paint, a rigged tape of howls — and a personal trinket dropped in the rush.", "clue"); } },
+    ],
+  },
+};
+
+/* ---------- Puzzles ----------
+   kinds: 'code' (type the digits) | 'sequence' (press buttons in order) */
+const PUZZLES = {
+  safe: {
+    kind: "code", title: "The Wall Safe", icon: "🔐",
+    body: "A heavy four-digit dial set into the iron door.",
+    solution: "1888", length: 4,
+    hint: g => g.flag("safeHint") ? 'The ledger said: "the year the manor burned — 1888."' : "You don't know the combination yet. The library might.",
+    solved: g => g.flag("safeOpen"),
+    onSolve: g => { g.set("safeOpen"); g.take("brassKey"); g.take("mapA"); g.note("The safe swings open: a BRASS KEY and the west half of a TREASURE MAP!", "good"); },
+  },
+  piano: {
+    kind: "sequence", title: "The Grand Piano", icon: "🎹",
+    body: "Four keys glow faintly, waiting for the right tune. Play the lullaby.",
+    buttons: [{ id: "c", label: "C 🔵" }, { id: "e", label: "E 🟢" }, { id: "g", label: "G 🟡" }, { id: "a", label: "A 🔴" }],
+    solution: ["c", "e", "g", "c"],
+    hint: g => g.has("sheet") ? "The sheet music circles: C · E · G · C." : "There's sheet music somewhere — the library, perhaps.",
+    solved: g => g.flag("lairOpen"),
+    onSolve: g => { g.set("lairOpen"); g.sfx("door"); g.note("The lullaby finishes and a section of wall grinds open — a SECRET passage to the Phantom's lair!", "good"); },
+  },
+  musicbox: {
+    kind: "sequence", title: "The Music Box", icon: "🎵",
+    body: "Press the colored tabs in the order painted on the nursery wall.",
+    buttons: [{ id: "blue", label: "🔵" }, { id: "green", label: "🟢" }, { id: "yellow", label: "🟡" }, { id: "red", label: "🔴" }],
+    solution: ["yellow", "yellow", "red", "green"],
+    hint: () => "The nursery wall shows: 🟡 🟡 🔴 🟢.",
+    solved: g => g.flag("boxSolved"),
+    onSolve: g => { g.set("boxSolved"); g.take("locketB"); g.courage(15); g.note("The lid springs up to a tinkling tune, revealing a hidden LOCKET HINGE.", "good"); },
+  },
+  stars: {
+    kind: "sequence", title: "The Constellation Dial", icon: "✨",
+    body: "Rotate the dial to the constellations in the proper order.",
+    buttons: [{ id: "orion", label: "Orion" }, { id: "lyra", label: "Lyra" }, { id: "draco", label: "Draco" }, { id: "ursa", label: "Ursa" }],
+    solution: ["orion", "lyra", "draco"],
+    hint: g => g.flag("starHint") ? "The star chart read: Orion → Lyra → Draco." : "A star chart would tell you the order. Try the library.",
+    solved: g => g.flag("starsSolved"),
+    onSolve: g => { g.set("starsSolved"); g.take("mapB"); g.note("The dome clicks; the telescope drops a brass tube into your paws — the east half of the TREASURE MAP!", "good"); },
+  },
+};
+
+/* ---------- Side mysteries (optional) ---------- */
+const QUESTS = {
+  locket: {
+    name: "The Shattered Locket", icon: "📿",
+    blurb: "Three pieces of a broken locket are scattered through the manor. Make it whole.",
+    progress: g => ["locketA", "locketB", "locketC"].filter(i => g.has(i)).length,
+    total: 3,
+    done: g => g.has("locketA") && g.has("locketB") && g.has("locketC"),
+    onComplete: g => { g.note("The three locket pieces snap together. Inside: young Eleanor Dew and a note — 'Whoever frightens this house frightens her memory.' Heartened, you press on.", "good"); g.courage(25); g.snack(2); },
+  },
+  treasure: {
+    name: "The Dew Family Fortune", icon: "💎",
+    blurb: "A treasure map was torn in two. Find both halves and follow it to the lost Dew fortune.",
+    progress: g => (g.has("mapA") || g.flag("treasureLocated") ? 1 : 0) + (g.has("mapB") || g.flag("treasureLocated") ? 1 : 0),
+    total: 2,
+    done: g => g.flag("treasureTaken"),
+    /* When both halves are held, mark the location so the ballroom hearth opens up. */
+    tick: g => { if (g.has("mapA") && g.has("mapB") && !g.flag("treasureLocated")) { g.set("treasureLocated"); g.note("The two map halves align — X marks the loose hearth-stone in the BALLROOM!", "clue"); } },
+    onComplete: g => { g.note("Side mystery solved: the lost Dew fortune is recovered!", "good"); g.snack(3); },
+  },
+  lair: {
+    name: "The Phantom's Hideout", icon: "🦇",
+    blurb: "Somewhere in the manor the Phantom suits up between scares. Find the lair.",
+    progress: g => g.flag("foundLair") ? 1 : 0,
+    total: 1,
+    done: g => g.flag("foundLair"),
+    onComplete: g => { g.note("Side mystery solved: you've found the Phantom's lair. The unmasking will be all the sweeter.", "good"); },
+  },
+};
+
+/* ---------- The rest of Mystery Inc. (cameos stationed in rooms) ---------- */
+const GANG_SPOTS = {
+  foyer:   { id: "fred",   name: "Fred",   line: 'Fred plants his hands on his hips: "Gang, let\'s split up and search for clues!"' },
+  library: { id: "velma",  name: "Velma",  line: 'Velma pushes up her glasses: "Jinkies! The answer\'s always hiding in the books."' },
+  kitchen: { id: "shaggy", name: "Shaggy", line: 'Shaggy peeks from the pantry: "Like, did somebody say snacks, Scoob? Zoinks!"' },
+  gallery: { id: "daphne", name: "Daphne", line: 'Daphne studies a frame: "These portraits are to die for… just watch out for traps, okay?"' },
+};
+
+/* Rooms where the Phantom might first lurk (kept away from the start). */
+const PHANTOM_START = ["crypt", "attic", "observatory", "greenhouse", "wineCellar"];
+
+/* ---------- Flavor text ---------- */
+const SCARE_LINES = [
+  "ZOINKS! The Phantom lunges from the shadows! You steady your nerves with a Scooby Snack.",
+  "A bony hand grabs your shoulder — RUOOOH! You drop a snack and bolt.",
+  "The lights gutter out and glowing eyes appear! You munch a snack to keep from fainting.",
+  "The Phantom's wail rattles the windows! You scarf a snack for courage.",
+];
+const SEARCH_EMPTY = [
+  "You rummage around but find only dust bunnies and cobwebs.",
+  "Nothing here but spooky atmosphere and a faint smell of old cheese.",
+  "You search high and low… nope, just creaks and shadows.",
+];
+
+</script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — minimap + Phantom AI =====
+   A schematic floor-plan of the mansion that tracks Skoobie and the roaming
+   Phantom, plus the graph helpers the Phantom uses to stalk you (BFS distance
+   and shortest-path stepping). Secret rooms are excluded from the Phantom's
+   wanderings so it never gets stuck somewhere you can't reach. */
+const Minimap = (function () {
+  "use strict";
+  const SECRET = ["lair", "lab"];
+
+  /* hand-placed schematic positions on a 720 x 480 canvas */
+  const POS = {
+    observatory: [110, 52], chapel: [232, 44], landing: [360, 52], masterBedroom: [490, 44], nursery: [612, 52],
+    attic: [360, 124], stairs: [360, 192],
+    study: [70, 250], library: [186, 250], foyer: [360, 262], diningHall: [492, 250], kitchen: [592, 246], pantry: [684, 244],
+    ballroom: [330, 344], gallery: [196, 360], conservatory: [456, 344], greenhouse: [548, 414],
+    lair: [456, 420], lab: [120, 432],
+    cellar: [648, 322], wineCellar: [704, 388], catacombs: [624, 412], crypt: [612, 462],
+  };
+  const SHORT = {
+    observatory: "Obsv", chapel: "Chapel", landing: "Landing", masterBedroom: "Bedrm", nursery: "Nursery",
+    attic: "Attic", stairs: "Stairs", study: "Study", library: "Library", foyer: "Foyer", diningHall: "Dining",
+    kitchen: "Kitchen", pantry: "Pantry", ballroom: "Ballrm", gallery: "Gallery", conservatory: "Consv",
+    greenhouse: "Green", lair: "Lair", lab: "Lab", cellar: "Cellar", wineCellar: "Wine", catacombs: "Catacb", crypt: "Crypt",
+  };
+
+  let ADJ = null;
+  function adj() {
+    if (ADJ) return ADJ;
+    ADJ = {};
+    for (const id in ROOMS) ADJ[id] = ROOMS[id].exits.map(e => (typeof e === "string" ? e : e.to));
+    for (const id in ADJ) ADJ[id].forEach(n => { if (ADJ[n] && !ADJ[n].includes(id)) ADJ[n].push(id); });
+    return ADJ;
+  }
+  const neighbors = (id) => adj()[id] || [];
+  /* neighbors the Phantom may step to (no secret rooms) */
+  const roamNeighbors = (id) => neighbors(id).filter(n => !SECRET.includes(n));
+
+  function bfs(start) {
+    const dist = { [start]: 0 }, q = [start];
+    while (q.length) { const c = q.shift(); for (const n of neighbors(c)) if (dist[n] === undefined) { dist[n] = dist[c] + 1; q.push(n); } }
+    return dist;
+  }
+  const distance = (a, b) => { const d = bfs(b); return d[a] === undefined ? 99 : d[a]; };
+
+  /* next hop from `from` along the shortest path toward `to` */
+  function stepToward(from, to) {
+    const d = bfs(to); let best = from, bd = Infinity;
+    for (const n of roamNeighbors(from)) if ((d[n] ?? Infinity) < bd) { bd = d[n]; best = n; }
+    return best;
+  }
+
+  function build(state) {
+    const cur = state.room, ph = state.phantomRoom, visited = state.visited || {};
+    let edges = "", drawn = new Set();
+    for (const id in POS) for (const n of neighbors(id)) {
+      if (!POS[n]) continue; const key = [id, n].sort().join("|"); if (drawn.has(key)) continue; drawn.add(key);
+      edges += `<line x1="${POS[id][0]}" y1="${POS[id][1]}" x2="${POS[n][0]}" y2="${POS[n][1]}" stroke="#2c3360" stroke-width="2"/>`;
+    }
+    let nodes = "";
+    for (const id in POS) {
+      const [x, y] = POS[id];
+      const isCur = id === cur, isPh = id === ph, seen = visited[id] || isCur;
+      const fill = isCur ? "#7bf1a8" : seen ? "#3a4170" : "#1a1e3a";
+      nodes += `<circle cx="${x}" cy="${y}" r="${isCur || isPh ? 11 : 7}" fill="${fill}" stroke="${isPh ? "#ff5d73" : "#2c3360"}" stroke-width="${isPh ? 3 : 1.5}"/>`;
+      if (isCur) nodes += `<circle cx="${x}" cy="${y}" r="16" fill="none" stroke="#7bf1a8" stroke-width="2" opacity=".6" class="mm-pulse"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11">🐾</text>`;
+      if (isPh) nodes += `<text x="${x}" y="${y + 5}" text-anchor="middle" font-size="14" class="mm-pulse">👻</text>`;
+      if (seen && !isCur && !isPh) nodes += `<text x="${x}" y="${y + 20}" text-anchor="middle" font-size="9" fill="#9aa0c8">${SHORT[id]}</text>`;
+    }
+    return `<svg viewBox="0 0 720 488" class="mm-svg" role="img" aria-label="mansion map">${edges}${nodes}
+      <g font-size="11" fill="#9aa0c8"><text x="14" y="478">🐾 You</text><text x="90" y="478" fill="#ff8a98">👻 Phantom</text></g></svg>`;
+  }
+
+  return { neighbors, roamNeighbors, distance, stepToward, build, SECRET };
+})();
+
+</script>
+<script>
+/* ===== Skoobie-Dew & the Mystery Mansion — engine ===== */
+(function () {
+  "use strict";
+
+  const SAVE_KEY = "skoobie-dew-save-v2";
+
+  // ---- tiny DOM helpers ----
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+
+  let state = null;
+  let diff = DIFFICULTIES.normal;
+
+  // ---- state ----
+  function freshState(diffId) {
+    const d = DIFFICULTIES[diffId] || DIFFICULTIES.normal;
+    const culprit = pick(SUSPECTS);
+    return {
+      diff: d.id,
+      culpritId: culprit.id,
+      room: START_ROOM,
+      phantomRoom: pick(PHANTOM_START),
+      visited: { [START_ROOM]: true },
+      snacks: d.snacks,
+      courage: d.courage,
+      hintsLeft: d.hints,
+      inventory: [],
+      flags: {},
+      done: {},               // "room#action" -> true (for once-actions)
+      cluesFound: {},         // clueId -> true
+      quests: {},             // questId -> true once completed
+      accusedId: null,
+      over: false, solved: false,
+    };
+  }
+
+  const culprit = () => SUSPECTS.find((s) => s.id === state.culpritId);
+  const coreFoundCount = () => CORE_CLUE_IDS.filter((id) => state.cluesFound[id]).length;
+  const allClueIds = () => Object.keys(CLUES).filter((id) => state.cluesFound[id]);
+
+  // ---- persistence ----
+  const save = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (_) {} };
+  const clearSave = () => { try { localStorage.removeItem(SAVE_KEY); } catch (_) {} };
+  function load() { try { const r = localStorage.getItem(SAVE_KEY); if (!r) return null; const s = JSON.parse(r); return s && !s.over ? s : null; } catch (_) { return null; } }
+
+  // ---- screens / log ----
+  function show(id) { document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active")); $("#" + id).classList.add("active"); }
+  function logMsg(text, kind) {
+    const log = $("#log");
+    log.appendChild(el("div", "log-entry" + (kind ? " " + kind : ""), text));
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // ---- the api handed to every interaction / puzzle / quest ----
+  const g = {
+    rng: () => Math.random(),
+    sfx: (name) => { if (Sfx[name]) Sfx[name](); },
+    state: () => state,
+    has: (id) => state.inventory.includes(id),
+    take(id) { if (!this.has(id)) { state.inventory.push(id); const it = ITEMS[id]; logMsg(`🎒 Picked up <b>${it.name}</b> ${it.icon}`, "good"); Sfx.item(); } },
+    add(id) { this.take(id); },
+    remove(id) { state.inventory = state.inventory.filter((x) => x !== id); },
+    flag: (name) => !!state.flags[name],
+    set(name, val) { state.flags[name] = val === undefined ? true : val; },
+    note: (text, kind) => logMsg(text, kind),
+    clue(id) {
+      if (state.cluesFound[id]) return;
+      state.cluesFound[id] = true;
+      const c = CLUES[id];
+      logMsg(`${c.icon} <b>${c.core ? "Clue" : "Bonus clue"} found!</b> ${c.text(culprit())}`, "clue");
+      Sfx.clue();
+      if (coreFoundCount() === CORE_CLUE_IDS.length) logMsg("That's all four key leads — open the <b>Case File</b> to name the Phantom! 🕵️", "good");
+    },
+    snack(n) { state.snacks = Math.max(0, state.snacks + n); },
+    courage(n) {
+      state.courage = Math.max(0, Math.min(100, state.courage + n));
+      if (state.courage <= 0 && !state.over) loseGame("Your courage runs dry and the whole gang bolts for the door, howling into the night. The Phantom wins this time!");
+    },
+    move(roomId) { goTo(roomId); },
+    puzzle(id) { openPuzzle(id); },
+    trap(deathMsg, hintMsg) {
+      Sfx.scare();
+      if (diff.lethalTraps) {
+        loseGame(deathMsg + (hintMsg ? `<br><br><i>${hintMsg}</i>` : ""));
+      } else {
+        logMsg(deathMsg + " <i>(On Sleuth difficulty you scramble clear, badly shaken.)</i>", "scare");
+        if (hintMsg) logMsg("💡 " + hintMsg, "good");
+        this.courage(-40);
+      }
+    },
+    win() { winGame(); },
+    lose(msg) { loseGame(msg); },
+  };
+
+  // ---- quests (side mysteries) ----
+  function runQuests() {
+    Object.keys(QUESTS).forEach((qid) => {
+      const q = QUESTS[qid];
+      if (q.tick) q.tick(g);
+      if (!state.quests[qid] && q.done(g)) {
+        state.quests[qid] = true;
+        q.onComplete(g);
+        Sfx.puzzle();
+      }
+    });
+  }
+
+  // ---- rendering ----
+  function renderHUD() {
+    $("#stat-snacks").textContent = state.snacks;
+    $("#stat-courage").textContent = state.courage;
+    $("#stat-clues").textContent = coreFoundCount();
+    $("#hud-room").textContent = ROOMS[state.room].name;
+    renderPhantomSense();
+    const hb = $("#btn-hint");
+    const unlimited = diff.hints === Infinity;
+    hb.textContent = "💡 Hint" + (unlimited ? "" : " (" + state.hintsLeft + ")");
+    hb.disabled = !unlimited && state.hintsLeft <= 0;
+    $("#btn-sound").textContent = Sfx.isMuted() ? "🔇" : "🔊";
+  }
+
+  function renderPhantomSense() {
+    const el2 = $("#stat-phantom"); if (!el2) return;
+    const d = Minimap.distance(state.room, state.phantomRoom);
+    const label = d <= 0 ? "HERE!" : d === 1 ? "Adjacent!" : d === 2 ? "Near" : d === 3 ? "Close" : "Distant";
+    el2.querySelector("b").textContent = label;
+    el2.classList.toggle("danger", d <= 1);
+    el2.classList.toggle("warn", d === 2 || d === 3);
+  }
+
+  function exitInfo(exit) {
+    if (typeof exit === "string") return { to: exit, visible: true, locked: false };
+    if (exit.secret) return { to: exit.to, visible: !!exit.secret(g), locked: false };
+    if (exit.locked) { const l = exit.locked(g); return { to: exit.to, visible: true, locked: l, msg: exit.lockedMsg }; }
+    return { to: exit.to, visible: true, locked: false };
+  }
+
+  function renderRoom() {
+    const room = ROOMS[state.room];
+    $("#scene-bg").innerHTML = Scenes.build(state.room);
+    const spot = GANG_SPOTS[state.room];
+    $("#gang-layer").innerHTML = spot ? Sprites.gang(spot.id) : "";
+    $("#room-name").textContent = `${room.art} ${room.name}`;
+    $("#room-desc").textContent = room.desc;
+
+    // actions
+    const actions = $("#actions");
+    actions.innerHTML = "";
+    (room.actions || []).forEach((a) => {
+      if (a.show && !a.show(g)) return;
+      const doneKey = state.room + "#" + a.id;
+      const isDone = a.once && state.done[doneKey];
+      const btn = el("button", "action-btn" + (isDone ? " searched" : ""), `${a.icon || "•"} ${isDone ? "Done — " + a.label : a.label}`);
+      if (!isDone) btn.addEventListener("click", () => doAction(a));
+      actions.appendChild(btn);
+    });
+    if (!actions.children.length) actions.appendChild(el("p", "muted small", "Nothing here but shadows. Try the exits."));
+
+    // exits
+    const exits = $("#exits");
+    exits.innerHTML = "";
+    room.exits.forEach((ex) => {
+      const info = exitInfo(ex);
+      if (!info.visible) return;
+      if (info.locked) {
+        const b = el("button", "action-btn exit-btn locked", "🔒 " + ROOMS[info.to].name);
+        b.addEventListener("click", () => { logMsg(info.msg || "It's locked.", "scare"); Sfx.error(); });
+        exits.appendChild(b);
+      } else {
+        const b = el("button", "action-btn exit-btn", ROOMS[info.to].name);
+        b.addEventListener("click", () => goTo(info.to));
+        exits.appendChild(b);
+      }
+    });
+
+    renderInventory();
+    renderHUD();
+  }
+
+  function renderInventory() {
+    const wrap = $("#inv");
+    wrap.innerHTML = "";
+    if (!state.inventory.length) { wrap.appendChild(el("p", "muted small", "Empty. Search rooms to collect items.")); return; }
+    state.inventory.forEach((id) => {
+      const it = ITEMS[id];
+      const chip = el("button", "inv-item", `${it.icon}<span>${it.name}</span>`);
+      chip.title = it.desc;
+      chip.addEventListener("click", () => { logMsg(`${it.icon} <b>${it.name}</b> — ${it.desc}`); Sfx.blip(); });
+      wrap.appendChild(chip);
+    });
+  }
+
+  // ---- actions / movement ----
+  function doAction(a) {
+    Sfx.blip();
+    if (a.risky) heroAnim("search", 900);
+    a.do(g);
+    if (a.once) state.done[state.room + "#" + a.id] = true;
+    if (state.over) return;
+    runQuests();
+    if (state.over) return;
+    if (a.risky) phantomTurn();   // a thorough search gives the Phantom a moment to prowl
+    if (state.over) return;
+    renderRoom();
+    save();
+  }
+
+  function goTo(roomId) {
+    Sfx.door();
+    heroAnim("walk", 700);
+    state.room = roomId;
+    state.visited[roomId] = true;
+    logMsg(`You creep into <b>${ROOMS[roomId].name}</b>.`);
+    gangCameo(roomId);
+    runQuests();
+    if (state.over) return;
+    // walked straight into the Phantom?
+    if (state.phantomRoom === roomId) encounter();
+    else phantomTurn();
+    if (state.over) return;
+    renderRoom();
+    save();
+  }
+
+  // ---- the roaming Phantom ----
+  function phantomTurn() {
+    if (state.over) return;
+    movePhantom();
+    if (state.phantomRoom === state.room) { encounter(); return; }
+    maybeScare();  // ambient jump-scare when the Phantom isn't right on top of you
+  }
+
+  function movePhantom() {
+    const opts = Minimap.roamNeighbors(state.phantomRoom);
+    if (!opts.length) return;
+    // chase bias scales with difficulty; otherwise wander
+    const bias = { easy: 0.25, normal: 0.5, spooky: 0.75 }[diff.id] || 0.5;
+    if (g.rng() < bias) state.phantomRoom = Minimap.stepToward(state.phantomRoom, state.room);
+    else state.phantomRoom = opts[Math.floor(g.rng() * opts.length)];
+  }
+
+  function encounter() {
+    const scene = $("#scene");
+    scene.classList.remove("scare-flash"); void scene.offsetWidth; scene.classList.add("scare-flash");
+    showPhantom(); Sfx.scare();
+    if (state.snacks > 0) { state.snacks -= 1; logMsg(`👻 The Phantom corners you in <b>${ROOMS[state.room].name}</b>! You fling a Scooby Snack and scramble free.`, "scare"); }
+    else { logMsg(`👻 The Phantom corners you in <b>${ROOMS[state.room].name}</b> — and you're out of snacks! Your courage buckles.`, "scare"); g.courage(-25); }
+    if (state.over) return;
+    // the Phantom recoils to an adjacent room so you aren't trapped
+    const away = Minimap.roamNeighbors(state.phantomRoom).filter(n => n !== state.room);
+    if (away.length) state.phantomRoom = away[Math.floor(g.rng() * away.length)];
+    renderHUD();
+  }
+
+  function gangCameo(roomId) {
+    const spot = GANG_SPOTS[roomId];
+    if (spot && !state.flags["met_" + spot.id]) { state.flags["met_" + spot.id] = true; logMsg("🐶 " + spot.line, "good"); }
+  }
+
+  // ---- hero walk / search animation ----
+  let heroTimer = null;
+  function heroAnim(cls, ms) {
+    const h = $("#hero-layer");
+    h.classList.remove("walk", "search"); void h.offsetWidth; h.classList.add(cls);
+    clearTimeout(heroTimer); heroTimer = setTimeout(() => h.classList.remove(cls), ms);
+  }
+
+  // ---- the Phantom scare mechanic ----
+  function maybeScare() {
+    if (state.over || g.rng() >= diff.scare) return;
+    const scene = $("#scene");
+    scene.classList.remove("scare-flash"); void scene.offsetWidth; scene.classList.add("scare-flash");
+    showPhantom();
+    Sfx.scare();
+    if (state.snacks > 0) { state.snacks -= 1; logMsg(pick(SCARE_LINES), "scare"); }
+    else { logMsg("The Phantom strikes and you're all out of snacks! Your courage takes the hit. 😱", "scare"); g.courage(-20); }
+    renderHUD();
+  }
+
+  function showPhantom() {
+    const layer = $("#phantom-layer");
+    layer.innerHTML = Sprites.phantom();
+    layer.classList.remove("show"); void layer.offsetWidth; layer.classList.add("show");
+    setTimeout(() => { layer.classList.remove("show"); layer.innerHTML = ""; }, 1500);
+  }
+
+  // ---- puzzles ----
+  let activePuzzle = null;
+  let seqEntry = [];
+
+  function openPuzzle(id) {
+    const p = PUZZLES[id];
+    if (!p) return;
+    if (p.solved(g)) { logMsg("You've already solved that one.", "good"); return; }
+    activePuzzle = id; seqEntry = [];
+    $("#pz-title").textContent = `${p.icon} ${p.title}`;
+    $("#pz-body").textContent = p.body;
+    $("#pz-hint").textContent = "💡 " + (typeof p.hint === "function" ? p.hint(g) : p.hint);
+    const area = $("#pz-area");
+    area.innerHTML = "";
+    if (p.kind === "code") {
+      const inp = el("input", "pz-code");
+      inp.type = "text"; inp.inputMode = "numeric"; inp.maxLength = p.length || 6; inp.placeholder = "•".repeat(p.length || 4);
+      inp.id = "pz-input";
+      area.appendChild(inp);
+      const submit = el("button", "btn btn-primary", "Enter");
+      submit.addEventListener("click", () => tryCode(inp.value));
+      inp.addEventListener("keydown", (e) => { if (e.key === "Enter") tryCode(inp.value); });
+      area.appendChild(submit);
+      setTimeout(() => inp.focus(), 50);
+    } else if (p.kind === "sequence") {
+      const disp = el("div", "pz-display", "&nbsp;"); disp.id = "pz-display"; area.appendChild(disp);
+      const row = el("div", "pz-buttons");
+      p.buttons.forEach((b) => {
+        const btn = el("button", "pz-key", b.label);
+        btn.addEventListener("click", () => pressSeq(id, b.id, b.label));
+        row.appendChild(btn);
+      });
+      area.appendChild(row);
+      const clear = el("button", "btn btn-ghost", "Clear");
+      clear.addEventListener("click", () => { seqEntry = []; $("#pz-display").innerHTML = "&nbsp;"; Sfx.blip(); });
+      area.appendChild(clear);
+    }
+    $("#puzzle").classList.add("open");
+  }
+
+  function tryCode(val) {
+    const p = PUZZLES[activePuzzle];
+    if ((val || "").trim() === p.solution) { solvePuzzle(p); }
+    else { Sfx.error(); const i = $("#pz-input"); i.classList.remove("shake"); void i.offsetWidth; i.classList.add("shake"); $("#pz-hint").textContent = "❌ That's not it. " + (typeof p.hint === "function" ? p.hint(g) : p.hint); }
+  }
+
+  function pressSeq(id, key, label) {
+    const p = PUZZLES[id];
+    Sfx.blip();
+    seqEntry.push(key);
+    $("#pz-display").textContent = seqEntry.map((k) => p.buttons.find((b) => b.id === k).label).join("  ");
+    if (seqEntry.length === p.solution.length) {
+      if (seqEntry.every((k, i) => k === p.solution[i])) solvePuzzle(p);
+      else { Sfx.error(); setTimeout(() => { $("#pz-display").innerHTML = '<span class="pz-wrong">✗ Wrong tune — try again</span>'; seqEntry = []; }, 250); }
+    }
+  }
+
+  function solvePuzzle(p) {
+    Sfx.puzzle();
+    closePuzzle();
+    p.onSolve(g);
+    runQuests();
+    if (state.over) return;
+    renderRoom();
+    save();
+  }
+  function closePuzzle() { $("#puzzle").classList.remove("open"); activePuzzle = null; seqEntry = []; }
+
+  // ---- hint system ----
+  function giveHint() {
+    const unlimited = diff.hints === Infinity;
+    if (!unlimited && state.hintsLeft <= 0) { logMsg("No hints left — you're on your own, Scoob!", "scare"); Sfx.error(); return; }
+    if (!unlimited) state.hintsLeft -= 1;
+    Sfx.hint();
+    logMsg("🔮 <b>Hint:</b> " + computeHint(), "good");
+    renderHUD(); save();
+  }
+
+  function computeHint() {
+    const missing = {
+      cloak: "A torn thread of the Phantom's cloak is snagged on something in the <b>Attic</b> — search the old trunk.",
+      tool: "The Phantom left a tool behind in the <b>Hidden Study</b> (slip through the ajar bookcase in the Library) — search the desk.",
+      motive: "The motive is written down. Read the open <b>ledger</b> in the Library.",
+      tell: "Go down to the <b>Cellar</b>, stand still, and listen for the Phantom's tell.",
+    };
+    for (const id of CORE_CLUE_IDS) if (!state.cluesFound[id]) return missing[id];
+    if (!state.accusedId || coreFoundCount() === CORE_CLUE_IDS.length) {
+      const extra = [];
+      if (!state.cluesFound.lair) extra.push("the Phantom's lair (play the right tune on the conservatory piano)");
+      if (!state.cluesFound.trinket) extra.push("the hidden laboratory (straighten the crooked portrait in the gallery)");
+      let msg = "You have all four key leads — open the <b>Case File</b> and accuse the Phantom!";
+      if (extra.length) msg += " For an airtight case, two bonus clues hide in " + extra.join(" and ") + ".";
+      return msg;
+    }
+    return "Open the Case File and make your accusation.";
+  }
+
+  // ---- case file ----
+  function openCaseFile() { renderCaseFile(); $("#casefile").classList.add("open"); }
+  function renderCaseFile() {
+    const found = allClueIds();
+    $("#cf-clue-count").textContent = `(${coreFoundCount()}/${CORE_CLUE_IDS.length} key`+ (found.length>coreFoundCount()? ` + ${found.length-coreFoundCount()} bonus`:"") +")";
+    const list = $("#cf-clues"); list.innerHTML = "";
+    if (!found.length) list.appendChild(el("li", "muted", "No clues yet — go snooping!"));
+    else found.forEach((id) => { const c = CLUES[id]; list.appendChild(el("li", c.core ? "" : "bonus", `${c.icon} ${c.text(culprit())}`)); });
+
+    const wrap = $("#cf-suspects"); wrap.innerHTML = "";
+    SUSPECTS.forEach((s) => {
+      const btn = el("button", "suspect" + (state.accusedId === s.id ? " selected" : ""));
+      btn.innerHTML = `<span class="face">${Sprites.suspect(s.id)}</span><span><span class="who">${s.name}</span><br><span class="role">${s.role}</span></span>`;
+      btn.addEventListener("click", () => { state.accusedId = s.id; Sfx.blip(); renderCaseFile(); save(); });
+      wrap.appendChild(btn);
+    });
+    updateAccuseBar();
+  }
+  function updateAccuseBar() {
+    const ready = coreFoundCount() === CORE_CLUE_IDS.length && state.accusedId;
+    $("#btn-accuse").disabled = !ready;
+    const hint = $("#accuse-hint");
+    if (coreFoundCount() < CORE_CLUE_IDS.length) hint.textContent = `Gather all four key leads first (${coreFoundCount()}/${CORE_CLUE_IDS.length}).`;
+    else if (!state.accusedId) hint.textContent = "Select the suspect you believe is the Phantom.";
+    else hint.textContent = `Ready to unmask ${SUSPECTS.find((x) => x.id === state.accusedId).name}?`;
+  }
+  function accuse() {
+    if (coreFoundCount() !== CORE_CLUE_IDS.length || !state.accusedId) return;
+    if (state.accusedId === state.culpritId) winGame();
+    else { const guy = SUSPECTS.find((s) => s.id === state.accusedId); loseGame(`You yank off ${guy.name}'s mask… but it really is just them! The clues pointed elsewhere, and the true Phantom slips away cackling into the night.`); }
+  }
+
+  // ---- mysteries panel ----
+  function openMysteries() {
+    const wrap = $("#quest-list"); wrap.innerHTML = "";
+    Object.keys(QUESTS).forEach((qid) => {
+      const q = QUESTS[qid];
+      const done = !!state.quests[qid];
+      const prog = q.progress(g);
+      const card = el("div", "quest" + (done ? " done" : ""));
+      card.innerHTML = `<div class="q-top"><span class="q-icon">${q.icon}</span><span class="q-name">${q.name}</span>
+        <span class="q-status">${done ? "✓ Solved" : prog + "/" + q.total}</span></div>
+        <p class="q-blurb">${q.blurb}</p>`;
+      wrap.appendChild(card);
+    });
+    $("#mysteries").classList.add("open");
+  }
+
+  function openMap() {
+    $("#mm-canvas").innerHTML = Minimap.build(state);
+    const d = Minimap.distance(state.room, state.phantomRoom);
+    $("#mm-sense").innerHTML = d <= 1
+      ? "🚨 The Phantom is <b>right on your tail</b> — move carefully!"
+      : `The Phantom is roaming about <b>${d}</b> room${d === 1 ? "" : "s"} away. Snacks keep it at bay.`;
+    $("#minimap").classList.add("open");
+  }
+
+  function closeModals() { document.querySelectorAll(".modal").forEach((m) => m.classList.remove("open")); }
+
+  // ---- endings ----
+  function winGame() {
+    state.over = true; state.solved = true; clearSave();
+    Sfx.win(); closeModals();
+    const c = culprit();
+    let bonus = "";
+    if (state.flags.foundLair) bonus += "Catching them in their own lair sealed the case. ";
+    if (state.flags.treasureTaken) bonus += "You even recovered the lost Dew fortune! ";
+    if (state.quests.locket) bonus += "And you mended poor Eleanor's locket along the way. ";
+    const sideCount = Object.keys(state.quests).length;
+    $("#ending-art").innerHTML = Sprites.suspect(c.id) + '<div class="unmask-tag">UNMASKED!</div>';
+    $("#ending-title").textContent = "Mystery Solved!";
+    $("#ending-text").innerHTML =
+      `You whip off the Phantom's mask to reveal&hellip; <b>${c.name}</b>, ${c.role.toLowerCase()}!<br><br>` +
+      `"And I would've gotten away with it too, if it weren't for you meddling kids!" Their scheme — ${c.motive} — is foiled at last.<br><br>` +
+      (bonus ? `<span class="ending-bonus">${bonus}</span><br><br>` : "") +
+      `🦴 ${state.snacks} snacks &nbsp;•&nbsp; 😼 ${state.courage}% courage &nbsp;•&nbsp; 🗂️ ${sideCount}/3 side mysteries &nbsp;•&nbsp; Difficulty: ${diff.name}` +
+      `<div class="gang-lineup">${["shaggy", "velma", "fred", "daphne"].map(id => Sprites.gang(id)).join("")}</div>` +
+      `<div class="gang-cheer">Mystery Inc. cheers — another case closed! 🎉</div>`;
+    $("#ending").classList.add("open");
+  }
+  function loseGame(reason) {
+    state.over = true; clearSave();
+    Sfx.lose(); closeModals();
+    $("#ending-art").innerHTML = Sprites.phantom();
+    $("#ending-title").textContent = "The Phantom Escapes!";
+    $("#ending-text").innerHTML = reason + "<br><br>Better luck next time, gang!";
+    $("#ending").classList.add("open");
+  }
+
+  // ---- boot ----
+  function startGame(existing, diffId) {
+    state = existing || freshState(diffId);
+    diff = DIFFICULTIES[state.diff] || DIFFICULTIES.normal;
+    $("#log").innerHTML = "";
+    $("#hero-layer").innerHTML = Sprites.hero() + '<div class="hero-glass">🔎</div>';
+    $("#phantom-layer").innerHTML = "";
+    gangCameo(state.room);
+    closeModals();
+    show("game-screen");
+    if (existing) logMsg("↩ <b>Case resumed.</b> Now where were we…", "good");
+    else {
+      logMsg(`🔦 You and the gang step into <b>Dew Manor</b> on <b>${diff.name}</b> difficulty. The door slams shut behind you!`, "good");
+      logMsg("Snoop every room and <b>Search</b> for clues. Four key leads will unmask the Phantom — open the <b>Case File</b> when you're sure. Two bonus clues, side mysteries, items, puzzles and a few <i>deadly</i> traps await the brave.");
+    }
+    renderRoom(); save();
+  }
+
+  function chooseDifficulty() {
+    const wrap = $("#difficulty-cards"); wrap.innerHTML = "";
+    Object.keys(DIFFICULTIES).forEach((id) => {
+      const d = DIFFICULTIES[id];
+      const card = el("button", "diff-card");
+      card.innerHTML = `<h3>${d.name}</h3><p>${d.blurb}</p>
+        <span class="diff-stats">🦴 ${d.snacks} &nbsp; 😱 ${Math.round(d.scare * 100)}% scares &nbsp; 💡 ${d.hints === Infinity ? "∞" : d.hints} hints &nbsp; ${d.lethalTraps ? "☠️ lethal traps" : "🛡️ safe traps"}</span>`;
+      card.addEventListener("click", () => { Sfx.blip(); clearSave(); startGame(null, id); });
+      wrap.appendChild(card);
+    });
+    show("difficulty-screen");
+  }
+
+  // ---- wire up ----
+  function init() {
+    const saved = load();
+    if (saved) $("#btn-continue").hidden = false;
+
+    $("#btn-new-game").addEventListener("click", () => { Sfx.blip(); chooseDifficulty(); });
+    $("#btn-continue").addEventListener("click", () => startGame(load()));
+    $("#btn-how").addEventListener("click", () => { Sfx.blip(); show("how-screen"); });
+    document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", () => { Sfx.blip(); show(b.dataset.goto); }));
+
+    $("#btn-menu").addEventListener("click", () => { save(); $("#btn-continue").hidden = false; show("title-screen"); });
+    $("#btn-hint").addEventListener("click", giveHint);
+    $("#btn-sound").addEventListener("click", () => { Sfx.toggleMute(); renderHUD(); });
+    $("#btn-casefile").addEventListener("click", () => { Sfx.blip(); openCaseFile(); });
+    $("#btn-mysteries").addEventListener("click", () => { Sfx.blip(); openMysteries(); });
+    $("#btn-map").addEventListener("click", () => { Sfx.blip(); openMap(); });
+    $("#btn-accuse").addEventListener("click", accuse);
+    $("#btn-play-again").addEventListener("click", () => { Sfx.blip(); chooseDifficulty(); });
+
+    $("#pz-close").addEventListener("click", () => { Sfx.blip(); closePuzzle(); });
+    document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => { Sfx.blip(); closeModals(); }));
+    document.querySelectorAll(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) { if (m.id === "puzzle") closePuzzle(); else closeModals(); } }));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeModals(); closePuzzle(); } });
+
+    // light debug hook (handy for testing; harmless in play)
+    window.SkoobieDebug = { state: () => state, culprit: () => culprit(), api: g };
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+
+</script>
 </body>
 </html>

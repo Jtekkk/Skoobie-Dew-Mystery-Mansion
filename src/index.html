@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skoobie-Dew &amp; the Mystery Mansion</title>
+  <meta name="description" content="A spooky point-and-click mystery adventure. Explore the haunted manor, gather clues, solve puzzles, dodge death traps, and unmask the Phantom!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ===== TITLE ===== -->
+    <section id="title-screen" class="screen active">
+      <div class="fog fog-1"></div>
+      <div class="fog fog-2"></div>
+      <div class="title-card">
+        <p class="kicker">A Spooky Point-&amp;-Click Mystery</p>
+        <h1 class="game-title">Skoobie-Dew<span class="amp">&amp;&nbsp;the</span>Mystery Mansion</h1>
+        <p class="tagline">The old Dew Manor is haunted again&hellip; or <em>is</em> it?
+          Snoop the shadows, solve the puzzles, dodge the death traps, and unmask the Phantom!</p>
+        <div class="title-buttons">
+          <button id="btn-new-game" class="btn btn-primary">🔦 Start Investigation</button>
+          <button id="btn-continue" class="btn btn-ghost" hidden>↩ Continue Case</button>
+          <button id="btn-how" class="btn btn-ghost">❔ How to Play</button>
+        </div>
+        <p class="credits">Grab a Scooby Snack and get sleuthing. Jinkies!</p>
+      </div>
+    </section>
+
+    <!-- ===== DIFFICULTY ===== -->
+    <section id="difficulty-screen" class="screen">
+      <div class="panel">
+        <h2>Pick Your Nerve</h2>
+        <p class="muted" style="margin-bottom:20px">How spooky do you dare go?</p>
+        <div id="difficulty-cards" class="diff-cards"></div>
+        <button class="btn btn-ghost" data-goto="title-screen" style="margin-top:18px">← Back</button>
+      </div>
+    </section>
+
+    <!-- ===== HOW TO PLAY ===== -->
+    <section id="how-screen" class="screen">
+      <div class="panel narrow">
+        <h2>How to Play</h2>
+        <ul class="how-list">
+          <li><strong>Explore</strong> the 22-room mansion through the exit doors. Some are <strong>locked</strong> or <strong>secret</strong>.</li>
+          <li><strong>Search</strong> rooms for <em>clues</em> and <em>items</em>. Four key leads unmask the Phantom; two bonus clues hide in secret rooms.</li>
+          <li><strong>Collect &amp; use items</strong> — keys open doors, a lantern lights the dark, rope crosses a chasm, a gas mask survives the spores.</li>
+          <li><strong>Solve puzzles</strong> (a safe, a piano, a music box, the stars) to open up optional <strong>side mysteries</strong>.</li>
+          <li><strong>Beware death traps.</strong> A wrong step can end the case for good — read the warnings!</li>
+          <li><strong>Munch Scooby Snacks</strong> to survive the Phantom's scares. Stuck? Hit <strong>💡 Hint</strong>.</li>
+          <li>When you've got the leads, open the <strong>Case File</strong> and accuse.</li>
+        </ul>
+        <button class="btn btn-primary" data-goto="title-screen">Got it!</button>
+      </div>
+    </section>
+
+    <!-- ===== GAME ===== -->
+    <section id="game-screen" class="screen">
+      <header class="hud">
+        <div class="hud-left">
+          <button id="btn-menu" class="chip" title="Back to title">☰</button>
+          <span class="hud-room" id="hud-room">Foyer</span>
+        </div>
+        <div class="hud-right">
+          <span class="stat" title="Scooby Snacks">🦴 <b id="stat-snacks">3</b></span>
+          <span class="stat" title="Courage">😼 <b id="stat-courage">100</b>%</span>
+          <span class="stat" title="Key leads found">🔎 <b id="stat-clues">0</b>/4</span>
+          <span class="stat phantom-sense" id="stat-phantom" title="Phantom proximity">👻 <b>—</b></span>
+          <button id="btn-hint" class="chip wide" title="Get a hint">💡 Hint</button>
+          <button id="btn-sound" class="chip" title="Toggle sound">🔊</button>
+        </div>
+      </header>
+
+      <main class="stage">
+        <div class="scene" id="scene">
+          <div class="scene-art" id="scene-art" aria-hidden="true">
+            <div class="scene-bg" id="scene-bg"></div>
+            <div class="gang-layer" id="gang-layer"></div>
+            <div class="hero-layer" id="hero-layer"></div>
+            <div class="phantom-layer" id="phantom-layer"></div>
+          </div>
+          <h2 class="room-name" id="room-name">The Foyer</h2>
+          <p class="room-desc" id="room-desc"></p>
+          <div class="actions" id="actions"></div>
+          <div class="exits" id="exits"></div>
+        </div>
+
+        <aside class="sidebar">
+          <div class="log-wrap">
+            <h3>Detective's Log</h3>
+            <div class="log" id="log"></div>
+          </div>
+          <div class="inv-wrap">
+            <h3>🎒 Inventory</h3>
+            <div class="inv" id="inv"></div>
+          </div>
+          <div class="side-buttons">
+            <button id="btn-casefile" class="btn btn-primary">📂 Case File</button>
+            <button id="btn-mysteries" class="btn btn-ghost">🗂️ Mysteries</button>
+            <button id="btn-map" class="btn btn-ghost">🗺️ Map</button>
+          </div>
+        </aside>
+      </main>
+    </section>
+
+    <!-- ===== CASE FILE ===== -->
+    <div id="casefile" class="modal">
+      <div class="modal-box">
+        <button class="modal-close" data-close>✕</button>
+        <h2>📂 Case File</h2>
+        <div class="casefile-grid">
+          <div>
+            <h3>Clues Gathered <span class="muted" id="cf-clue-count"></span></h3>
+            <ul class="clue-list" id="cf-clues"><li class="muted">No clues yet — go snooping!</li></ul>
+          </div>
+          <div>
+            <h3>Suspects</h3>
+            <div class="suspects" id="cf-suspects"></div>
+          </div>
+        </div>
+        <div class="accuse-bar">
+          <p class="muted" id="accuse-hint">Gather all four key leads before accusing.</p>
+          <button id="btn-accuse" class="btn btn-danger" disabled>🚨 Accuse the Phantom</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MYSTERIES ===== -->
+    <div id="mysteries" class="modal">
+      <div class="modal-box">
+        <button class="modal-close" data-close>✕</button>
+        <h2>🗂️ Side Mysteries</h2>
+        <p class="muted" style="margin-bottom:16px">Optional cases to crack for bonus rewards and a richer ending.</p>
+        <div id="quest-list" class="quest-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== MINIMAP ===== -->
+    <div id="minimap" class="modal">
+      <div class="modal-box">
+        <button class="modal-close" data-close>✕</button>
+        <h2>🗺️ Dew Manor</h2>
+        <p class="muted" id="mm-sense" style="margin-bottom:12px"></p>
+        <div id="mm-canvas" class="mm-canvas"></div>
+      </div>
+    </div>
+
+    <!-- ===== PUZZLE ===== -->
+    <div id="puzzle" class="modal">
+      <div class="modal-box puzzle-box">
+        <button class="modal-close" id="pz-close">✕</button>
+        <h2 id="pz-title">Puzzle</h2>
+        <p id="pz-body" class="muted"></p>
+        <div id="pz-area" class="pz-area"></div>
+        <p id="pz-hint" class="pz-hint"></p>
+      </div>
+    </div>
+
+    <!-- ===== ENDING ===== -->
+    <div id="ending" class="modal">
+      <div class="modal-box">
+        <div class="ending-art" id="ending-art" aria-hidden="true"></div>
+        <h2 id="ending-title">Case Closed!</h2>
+        <p id="ending-text"></p>
+        <button id="btn-play-again" class="btn btn-primary">🔁 New Mystery</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/sfx.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/minimap.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
