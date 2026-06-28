@@ -180,6 +180,10 @@ body {
 .chip:hover { background: var(--panel); }
 .stat { font-size: .95rem; color: var(--muted); white-space: nowrap; }
 .stat b { color: var(--ink); font-size: 1.05rem; }
+.phantom-sense.warn b { color: var(--gold); }
+.phantom-sense.danger b { color: var(--danger); }
+.phantom-sense.danger { animation: sensepulse 1s ease-in-out infinite; }
+@keyframes sensepulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
 
 /* ---------- Stage ---------- */
 .stage {
@@ -204,22 +208,59 @@ body {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 .scene-art {
-  height: 240px;
-  background: linear-gradient(160deg, #2a2150, #12233f);
+  height: 260px;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 5.5rem;
   border-bottom: 1px solid var(--line);
-  text-shadow: 0 8px 30px rgba(0,0,0,.6);
+  overflow: hidden;
+  background: #0a0a16;
 }
-.scene-art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 120%, rgba(179,136,255,.22), transparent 60%);
-  pointer-events: none;
+.scene-bg { position: absolute; inset: 0; z-index: 1; }
+.scene-svg { display: block; width: 100%; height: 100%; }
+
+/* ---- character sprite layers over the scene ---- */
+.hero-layer { position: absolute; left: 26px; bottom: 6px; width: 96px; height: 110px; z-index: 3; pointer-events: none; }
+.spr-hero { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation: heroBob 3.2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes heroBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(-1deg); } }
+
+/* gang cameo sprite (right side of scene) */
+.gang-layer { position: absolute; right: 30px; bottom: 8px; width: 70px; height: 104px; z-index: 3; pointer-events: none; }
+.gang-layer .spr-gang { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,.5)); animation: heroBob 3.6s ease-in-out infinite; transform-origin: bottom center; }
+
+/* hero walk / search animations */
+.hero-glass { position: absolute; left: 60px; bottom: 56px; font-size: 1.3rem; opacity: 0; pointer-events: none; }
+.hero-layer.walk .spr-hero { animation: heroWalk .7s ease; }
+@keyframes heroWalk { 0% { transform: translateX(-54px) translateY(0); } 25% { transform: translateX(-30px) translateY(-6px); } 50% { transform: translateX(-14px) translateY(0); } 75% { transform: translateX(-4px) translateY(-4px); } 100% { transform: translateX(0) translateY(0); } }
+.hero-layer.search .spr-hero { animation: heroSearch .9s ease; transform-origin: bottom center; }
+@keyframes heroSearch { 0%,100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(10deg) translateY(3px); } 55% { transform: rotate(8deg) translateY(2px); } 80% { transform: rotate(11deg) translateY(3px); } }
+.hero-layer.search .hero-glass { animation: glassPop .9s ease; }
+@keyframes glassPop { 0% { opacity: 0; transform: scale(.4) rotate(-20deg); } 35% { opacity: 1; transform: scale(1) rotate(0); } 80% { opacity: 1; transform: scale(1) translateY(-2px); } 100% { opacity: 0; transform: scale(.8); } }
+
+.phantom-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; }
+.phantom-layer.show { animation: phantomScare 1.5s ease-out forwards; }
+.spr-phantom { width: 150px; height: 180px; filter: drop-shadow(0 0 18px rgba(123,241,168,.6)); }
+@keyframes phantomScare {
+  0%   { opacity: 0; transform: translateX(120px) scale(.5) rotate(6deg); }
+  22%  { opacity: .97; transform: translateX(0) scale(1.12) rotate(0deg); }
+  62%  { opacity: .9;  transform: translateX(-6px) scale(1.05); }
+  100% { opacity: 0;  transform: translateX(0) scale(1.3) translateY(-18px); }
+}
+@media (prefers-reduced-motion: reduce) { .spr-hero { animation: none; } .phantom-layer.show { animation-duration: 1.2s; } }
+
+/* SVG atmosphere animations */
+.s-fog  { animation: sFog 22s ease-in-out infinite; }
+.s-fog2 { animation: sFog 30s ease-in-out infinite reverse; }
+@keyframes sFog { 0%,100% { transform: translateX(-40px); } 50% { transform: translateX(40px); } }
+.s-dust { animation: sDust 7s ease-in-out infinite; }
+@keyframes sDust { 0%,100% { transform: translateY(0); opacity: .15; } 50% { transform: translateY(-14px); opacity: .5; } }
+.s-flicker { animation: sFlicker 2.4s steps(3) infinite; transform-origin: center; }
+.s-flicker-slow { animation: sFlicker 5s ease-in-out infinite; }
+@keyframes sFlicker { 0%,100% { opacity: 1; } 45% { opacity: .55; } 70% { opacity: .85; } }
+.s-sway { animation: sSway 6s ease-in-out infinite; transform-origin: top center; }
+@keyframes sSway { 0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+.s-rock { animation: sRock 4s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes sRock { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .s-fog, .s-fog2, .s-dust, .s-flicker, .s-flicker-slow, .s-sway, .s-rock { animation: none; }
 }
 .room-name { font-family: "Creepster", cursive; font-weight: 400; font-size: 2.2rem; letter-spacing: 1px; color: #fff; padding: 22px 26px 6px; }
 .room-desc { padding: 0 26px; color: var(--muted); line-height: 1.6; max-width: 60ch; }
@@ -331,7 +372,8 @@ body {
 }
 .suspect:hover { border-color: var(--accent-2); }
 .suspect.selected { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,.3); }
-.suspect .face { font-size: 2rem; line-height: 1; }
+.suspect .face { font-size: 2rem; line-height: 1; flex: 0 0 auto; }
+.suspect .face .spr-sus { width: 48px; height: 48px; display: block; border-radius: 50%; background: rgba(0,0,0,.25); }
 .suspect .who { font-weight: 800; }
 .suspect .role { font-size: .8rem; color: var(--muted); }
 
@@ -340,6 +382,24 @@ body {
 
 /* Ending */
 .ending-art { font-size: 4.5rem; text-align: center; margin-bottom: 10px; animation: pop .4s ease; }
+.ending-art .spr-sus, .ending-art .spr-phantom { width: 130px; height: 130px; display: inline-block; }
+.ending-art .spr-sus { border-radius: 50%; background: radial-gradient(circle, rgba(123,241,168,.25), transparent 70%); }
+.unmask-tag { font-family: "Creepster", cursive; font-size: 1.4rem; letter-spacing: 2px; color: var(--gold); margin-top: 4px; }
+
+/* gang victory lineup */
+.gang-lineup { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+.gang-lineup .spr-gang { width: 56px; height: 96px; animation: heroBob 3s ease-in-out infinite; }
+.gang-lineup .spr-gang:nth-child(2) { animation-delay: .4s; }
+.gang-lineup .spr-gang:nth-child(3) { animation-delay: .8s; }
+.gang-lineup .spr-gang:nth-child(4) { animation-delay: 1.2s; }
+.gang-cheer { margin-top: 8px; color: var(--accent); font-weight: 700; }
+
+/* minimap */
+.mm-canvas { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
+.mm-svg { width: 100%; height: auto; display: block; }
+.mm-pulse { animation: mmPulse 1.4s ease-in-out infinite; transform-origin: center; }
+@keyframes mmPulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .mm-pulse, .gang-layer .spr-gang, .gang-lineup .spr-gang { animation: none; } }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 #ending-text { color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
 #ending .modal-box { text-align: center; max-width: 560px; }
@@ -352,11 +412,94 @@ body {
   30% { background-color: rgba(255, 93, 115, .25); }
 }
 
+/* ---------- Difficulty cards ---------- */
+.diff-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.diff-card {
+  text-align: left; font-family: inherit; cursor: pointer;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; color: var(--ink); transition: border-color .15s, transform .08s, box-shadow .2s;
+}
+.diff-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.4); }
+.diff-card h3 { font-family: "Creepster", cursive; font-weight: 400; font-size: 1.6rem; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
+.diff-card p { color: var(--muted); font-size: .9rem; line-height: 1.45; margin-bottom: 12px; }
+.diff-stats { font-size: .78rem; color: var(--accent); font-family: "Special Elite", monospace; }
+
+/* ---------- HUD additions ---------- */
+.chip.wide { width: auto; padding: 0 12px; font-size: .85rem; font-family: inherit; font-weight: 700; }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Inventory ---------- */
+.inv-wrap {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.inv-wrap h3 { font-size: .9rem; color: var(--accent); margin-bottom: 10px; }
+.inv { display: flex; flex-wrap: wrap; gap: 8px; }
+.inv-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px 6px 10px; font-size: .82rem; color: var(--ink); cursor: pointer;
+  font-family: inherit; transition: border-color .15s, transform .08s;
+}
+.inv-item:hover { border-color: var(--gold); transform: translateY(-1px); }
+.inv-item span { font-weight: 700; }
+.small { font-size: .82rem; }
+
+.side-buttons { display: flex; gap: 10px; }
+.side-buttons .btn { flex: 1; }
+
+/* ---------- Locked exits ---------- */
+.exit-btn.locked { border-color: var(--danger); opacity: .8; }
+.exit-btn.locked::before { content: ""; }
+
+/* ---------- Mysteries ---------- */
+.quest-list { display: flex; flex-direction: column; gap: 12px; }
+.quest { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.quest.done { border-color: var(--accent); }
+.q-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.q-icon { font-size: 1.4rem; }
+.q-name { font-weight: 800; }
+.q-status { margin-left: auto; font-family: "Special Elite", monospace; font-size: .85rem; color: var(--gold); }
+.quest.done .q-status { color: var(--accent); }
+.q-blurb { color: var(--muted); font-size: .88rem; line-height: 1.45; }
+
+/* ---------- Puzzle ---------- */
+.puzzle-box { max-width: 480px; text-align: center; }
+.pz-area { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 22px 0 10px; }
+.pz-code {
+  font-family: "Special Elite", monospace; font-size: 2rem; letter-spacing: .5em; text-align: center;
+  width: 220px; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg-2); color: #fff;
+}
+.pz-code:focus { outline: none; border-color: var(--accent); }
+.pz-display {
+  min-height: 44px; font-size: 1.6rem; letter-spacing: .2em;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 16px; min-width: 240px;
+}
+.pz-wrong { color: var(--danger); font-size: 1rem; letter-spacing: normal; }
+.pz-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.pz-key {
+  font-family: inherit; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+  padding: 14px 20px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--ink); transition: transform .08s, border-color .15s;
+}
+.pz-key:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.pz-key:active { transform: translateY(0); }
+.pz-hint { color: var(--gold); font-size: .9rem; margin-top: 8px; min-height: 1.3em; }
+.shake { animation: shake .35s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+/* ---------- Case file bonus clue ---------- */
+.clue-list li.bonus { border-left-color: var(--accent-2); color: #e6d9ff; }
+.ending-bonus { color: var(--accent); font-weight: 700; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .stage { grid-template-columns: 1fr; }
   .casefile-grid { grid-template-columns: 1fr; }
   .log { max-height: 200px; }
-  .hud-right { gap: 10px; }
-  .stat { font-size: .85rem; }
+  .hud-right { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .stat { font-size: .82rem; }
+  .chip.wide { font-size: .8rem; }
 }
